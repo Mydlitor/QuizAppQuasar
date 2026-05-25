@@ -6,6 +6,18 @@
     </q-layout>
 </template>
 
+<script setup>
+import { useQuasar } from 'quasar';
+const $q = useQuasar()
+$q.fullscreen.request()
+    .then(() => {
+        console.log("fullscreen")
+    })
+    .catch(err => {
+        console.error(err)
+    })
+</script>
+
 <style>
 html {
     overflow: auto;
