@@ -1,5 +1,6 @@
 <template>
-    <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow">
+    <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow" no-backdrop-dismiss
+        no-shake>
         <div class="dialog-main">
             <q-linear-progress class="linear-progress" :value="progressRemaining" />
             <h5>{{ remaining }}</h5>

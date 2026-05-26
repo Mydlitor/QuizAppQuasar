@@ -9,6 +9,7 @@
                     :question="question" @click="showQuestionDialog(question)" />
             </div>
         </div>
+        <p>{{ currentTeam }}</p>
         <QuestionDialog v-model="isDialogShown" :question="currentQuestion" :teams="teams" :current-team="currentTeam"
             @answered-correctly="onAnsweredCorrectly" @answered-incorrectly="onAnsweredIncorrectly"
             @hide-dialog="onDialogHide" />
@@ -46,7 +47,6 @@ const onAnsweredIncorrectly = (question) => {
 }
 
 const onDialogHide = () => {
-    console.log("dialog hide")
     gameStore.selectNextTeam()
 }
 
@@ -55,17 +55,20 @@ onMounted(() => {
     gameStore.setupData()
     questions.value = gameStore.getQuestions()
     teams.value = gameStore.getTeams();
-    console.log(questions.value);
-    console.log(teams.value)
+    currentTeam.value = gameStore.getCurrentTeam()
 })
 </script>
 
 <style scoped>
 .game-view-main {
     padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .questions-container {
+    width: 80%;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
