@@ -14,7 +14,8 @@
                     <q-btn label="STEAL" @click="onSteal">
                         <q-menu>
                             <q-list>
-                                <q-item clickable v-close-popup v-for="team in teams" v-bind:key="team.name">
+                                <q-item clickable v-close-popup v-for="team in teams" v-bind:key="team.name"
+                                    @click="selectTeam(team)">
                                     <q-item-section>
                                         {{ team.name }}
                                     </q-item-section>
@@ -22,7 +23,6 @@
                             </q-list>
                         </q-menu>
                     </q-btn>
-                    currentTeam: {{ currentTeam }}
                 </div>
             </div>
         </div>
@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref, shallowRef, watch } from 'vue';
+import { computed, ref, shallowRef, watch } from 'vue';
 import { useCountdown, onKeyStroke } from '@vueuse/core'
 import { useGameStore } from 'src/stores/gameStore';
 
@@ -38,7 +38,7 @@ const gameStore = useGameStore()
 
 const answerTime = shallowRef(30);
 const isTimerActivated = ref(false)
-const timerLabel = ref('START')
+const timerLabel = computed(() => { return isTimerActivated.value ? "STOP" : "START" })
 const { remaining, start, stop } = useCountdown(answerTime, {})
 const progressRemaining = ref(1.0)
 const isSteal = ref(false);
@@ -46,14 +46,17 @@ const teams = ref([])
 const currentTeam = ref(null)
 
 const onAnsweredCorrectly = () => {
-    gameStore.setQuestionCorrect(props.question, currentTeam)
+    gameStore.setQuestionCorrect(props.question, currentTeam.value)
 }
 
 const onAnsweredIncorrectly = () => {
     toggleTimer()
     gameStore.setQuestionIncorrect(props.question)
     teams.value = teams.value.filter(t => t != currentTeam.value)
-    currentTeam.value = gameStore.getNextTeam(currentTeam.value)
+}
+
+const selectTeam = (team) => {
+    currentTeam.value = team;
 }
 
 const onSteal = () => {
@@ -65,15 +68,11 @@ const toggleTimer = () => {
 }
 
 const startTimer = () => {
-    timerLabel.value = 'STOP'
-    console.log("start")
     start();
     isTimerActivated.value = true
 }
 
 const stopTimer = () => {
-    timerLabel.value = 'START'
-    console.log("stop")
     stop();
     isTimerActivated.value = false
 }
@@ -81,7 +80,7 @@ const stopTimer = () => {
 const onDialogBeforeShow = () => {
     teams.value = gameStore.getTeams()
     currentTeam.value = gameStore.getCurrentTeam()
-    console.log(currentTeam.value)
+    teams.value = teams.value.filter(t => t != currentTeam.value)
 }
 
 const onDialogBeforeHide = () => {
@@ -123,12 +122,13 @@ const props = defineProps({
     // padding-left: 5rem;
     // padding-right: 5rem;
     // padding-bottom: 10rem;
-    padding: 10rem 5rem 10rem 5rem;
+    padding: 10rem 5rem 5rem 5rem;
 }
 
 .buttons-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 1rem;
 }
 </style>

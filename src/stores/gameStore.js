@@ -46,7 +46,7 @@ const setupData = () => {
 const setQuestionValues = () => {
     questions.value.categories.forEach((category) => {
         category.questions.forEach((question) => {
-            question.isAnswered = false;
+            question.isAnswered = null;
             question.points = (parseInt(question.number) + 1) * 10;
             question.teamAnswered = null;
             question.id = category.name.substring(0, 16) + question.number;

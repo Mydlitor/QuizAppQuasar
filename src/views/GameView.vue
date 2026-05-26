@@ -6,7 +6,7 @@
         <div v-else class="questions-container">
             <div class="category-column" v-for="category in questions.categories" v-bind:key="category.name">
                 <QuestionElement v-for="question in category.questions" v-bind:key="question.number"
-                    :question-points="question.points" @click="showQuestionDialog(question)" />
+                    :question="question" @click="showQuestionDialog(question)" />
             </div>
         </div>
         <QuestionDialog v-model="isDialogShown" :question="currentQuestion" />
