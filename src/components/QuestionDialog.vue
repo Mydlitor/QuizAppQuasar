@@ -82,6 +82,7 @@ const onDialogBeforeShow = () => {
 
 const onDialogBeforeHide = () => {
     stopTimer()
+    emit('hide-dialog')
 }
 
 onKeyStroke(' ', e => {
@@ -99,7 +100,7 @@ const props = defineProps({
     currentTeam: Object,
 });
 
-const emit = defineEmits(['answered-correctly', 'answered-incorrectly'])
+const emit = defineEmits(['answered-correctly', 'answered-incorrectly', 'hide-dialog'])
 
 </script>
 

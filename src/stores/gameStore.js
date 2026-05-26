@@ -11,10 +11,11 @@ const getQuestions = () => questions.value;
 const getTeams = () => teams.value;
 const getCurrentTeam = () => currentTeam.value;
 
-const getNextTeam = (team) => {
-    const teamIndex = teams.value.indexOf(team);
-    if (teamIndex >= teams.value.length - 1) return teams.value[0];
-    return teams.value[teamIndex + 1];
+const selectNextTeam = () => {
+    const teamIndex = teams.value.indexOf(currentTeam.value);
+    if (teamIndex === -1) return;
+    const nextIndex = (teamIndex + 1) % teams.value.length;
+    currentTeam.value = teams.value[nextIndex];
 };
 
 const setQuestionCorrect = (question, team) => {
@@ -61,7 +62,7 @@ export function useGameStore() {
         getQuestions,
         getTeams,
         getCurrentTeam,
-        getNextTeam,
+        selectNextTeam,
         setQuestionCorrect,
         setQuestionIncorrect,
         setupData,

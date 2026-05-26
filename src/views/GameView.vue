@@ -10,7 +10,8 @@
             </div>
         </div>
         <QuestionDialog v-model="isDialogShown" :question="currentQuestion" :teams="teams" :current-team="currentTeam"
-            @answered-correctly="onAnsweredCorrectly" @answered-incorrectly="onAnsweredIncorrectly" />
+            @answered-correctly="onAnsweredCorrectly" @answered-incorrectly="onAnsweredIncorrectly"
+            @hide-dialog="onDialogHide" />
     </q-page>
 </template>
 
@@ -42,6 +43,11 @@ const onAnsweredCorrectly = (question, team) => {
 
 const onAnsweredIncorrectly = (question) => {
     gameStore.setQuestionIncorrect(question)
+}
+
+const onDialogHide = () => {
+    console.log("dialog hide")
+    gameStore.selectNextTeam()
 }
 
 onMounted(() => {
