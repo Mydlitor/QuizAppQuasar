@@ -14,7 +14,7 @@
                     <q-btn label="STEAL" @click="onSteal">
                         <q-menu>
                             <q-list>
-                                <q-item clickable v-close-popup v-for="team in teams" v-bind:key="team.name"
+                                <q-item clickable v-close-popup v-for="team in teamsOptions" v-bind:key="team.name"
                                     @click="selectTeam(team)">
                                     <q-item-section>
                                         {{ team.name }}
@@ -32,9 +32,6 @@
 <script setup>
 import { computed, ref, shallowRef, watch } from 'vue';
 import { useCountdown, onKeyStroke } from '@vueuse/core'
-import { useGameStore } from 'src/stores/gameStore';
-
-const gameStore = useGameStore()
 
 const answerTime = shallowRef(30);
 const isTimerActivated = ref(false)
@@ -42,21 +39,21 @@ const timerLabel = computed(() => { return isTimerActivated.value ? "STOP" : "ST
 const { remaining, start, stop } = useCountdown(answerTime, {})
 const progressRemaining = ref(1.0)
 const isSteal = ref(false);
-const teams = ref([])
-const currentTeam = ref(null)
+const teamsOptions = ref([])
+const selectedTeam = ref(null)
 
 const onAnsweredCorrectly = () => {
-    gameStore.setQuestionCorrect(props.question, currentTeam.value)
+    emit('answered-correctly', props.question, selectedTeam.value)
 }
 
 const onAnsweredIncorrectly = () => {
     toggleTimer()
-    gameStore.setQuestionIncorrect(props.question)
-    teams.value = teams.value.filter(t => t != currentTeam.value)
+    emit('answered-incorrectly', props.question)
+    teamsOptions.value = teamsOptions.value.filter(t => t != selectedTeam.value)
 }
 
 const selectTeam = (team) => {
-    currentTeam.value = team;
+    selectedTeam.value = team;
 }
 
 const onSteal = () => {
@@ -78,9 +75,9 @@ const stopTimer = () => {
 }
 
 const onDialogBeforeShow = () => {
-    teams.value = gameStore.getTeams()
-    currentTeam.value = gameStore.getCurrentTeam()
-    teams.value = teams.value.filter(t => t != currentTeam.value)
+    teamsOptions.value = props.teams
+    selectedTeam.value = props.currentTeam
+    teamsOptions.value = teamsOptions.value.filter(t => t != selectedTeam.value)
 }
 
 const onDialogBeforeHide = () => {
@@ -97,8 +94,12 @@ watch(remaining, (newRemaining) => {
 })
 
 const props = defineProps({
-    question: Object
+    question: Object,
+    teams: Array,
+    currentTeam: Object,
 });
+
+const emit = defineEmits(['answered-correctly', 'answered-incorrectly'])
 
 </script>
 
