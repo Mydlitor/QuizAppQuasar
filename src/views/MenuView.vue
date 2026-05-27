@@ -1,6 +1,6 @@
 <template>
     <q-page class="menu-view-main">
-        <h2>{{ }}</h2>
+        <h2 class="game-name">{{ gameName }}</h2>
         <router-link to='/game'>
             <q-btn class="start-button" label="START GAME" size="xl" />
         </router-link>
@@ -46,6 +46,10 @@ onBeforeMount(() => {
     align-items: center;
     justify-content: center;
     gap: 5rem;
+}
+
+.game-name {
+    font-weight: 600;
 }
 
 .settings-buttons {

@@ -34,7 +34,7 @@
 import { computed, ref, shallowRef, watch } from 'vue';
 import { useCountdown, onKeyStroke } from '@vueuse/core'
 
-const answerTime = shallowRef(30);
+const answerTime = shallowRef(5);
 const isTimerActivated = ref(false)
 const timerLabel = computed(() => { return isTimerActivated.value ? "STOP" : "START" })
 const { remaining, start, stop } = useCountdown(answerTime, {})
@@ -97,10 +97,25 @@ const onDialogBeforeHide = () => {
 const animateBorder = (color) => {
     if (!dialogDivRef.value)
         return;
-    dialogDivRef.value.style.borderColor = color;
-    window.setTimeout(() => {
-        dialogDivRef.value.style.borderColor = 'transparent';
-    }, 1000);
+    const flashes = [
+        { start: 0, end: 150 },
+        { start: 300, end: 450 },
+        { start: 600, end: 1050 },
+    ];
+
+    flashes.forEach(({ start, end }) => {
+        window.setTimeout(() => {
+            if (!dialogDivRef.value)
+                return;
+            dialogDivRef.value.style.borderColor = color;
+        }, start);
+
+        window.setTimeout(() => {
+            if (!dialogDivRef.value)
+                return;
+            dialogDivRef.value.style.borderColor = 'transparent';
+        }, end);
+    });
 }
 
 onKeyStroke(' ', e => {
@@ -110,6 +125,11 @@ onKeyStroke(' ', e => {
 
 watch(remaining, (newRemaining) => {
     progressRemaining.value = newRemaining / answerTime.value;
+    if (newRemaining === 0) {
+        animateBorder("white")
+        stopTimer();
+    }
+
 })
 
 const props = defineProps({
