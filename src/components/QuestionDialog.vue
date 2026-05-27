@@ -1,8 +1,8 @@
 <template>
     <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow" no-backdrop-dismiss
-        no-shake>
-        <div class="dialog-main" ref="dialogRef">
-            <q-linear-progress class="linear-progress" :value="progressRemaining" />
+        no-shake ref="qDialogRef">
+        <div class="dialog-main" ref="dialogDivRef">
+            <q-linear-progress class="linear-progress" rounded :value="progressRemaining" />
             <h5>{{ remaining }}</h5>
             <div class="dialog-content">
                 <h4>{{ props.question.text }}</h4>
@@ -42,12 +42,17 @@ const progressRemaining = ref(1.0)
 const isSteal = ref(false);
 const teamsOptions = ref([])
 const selectedTeam = ref(null)
-const dialogRef = ref(null)
+const dialogDivRef = ref(null)
+const qDialogRef = ref(null)
 
 const onAnsweredCorrectly = () => {
     stopTimer()
     animateBorder("green");
     emit('answered-correctly', props.question, selectedTeam.value)
+    window.setTimeout(() => {
+        qDialogRef.value.hide()
+    }, 3000);
+
 }
 
 const onAnsweredIncorrectly = () => {
@@ -91,12 +96,11 @@ const onDialogBeforeHide = () => {
 }
 
 const animateBorder = (color) => {
-    if (!dialogRef.value)
+    if (!dialogDivRef.value)
         return;
-    dialogRef.value.style.borderColor = color;
+    dialogDivRef.value.style.borderColor = color;
     window.setTimeout(() => {
-        dialogRef.value.style.borderColor = 'transparent';
-
+        dialogDivRef.value.style.borderColor = 'transparent';
     }, 1000);
 }
 
