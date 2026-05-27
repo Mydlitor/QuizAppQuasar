@@ -6,10 +6,13 @@ const questions = ref([]);
 const questionsMap = ref(new Map());
 const teams = ref([]);
 const currentTeam = ref(null);
+const gameName = ref(null);
 
 const getQuestions = () => questions.value;
 const getTeams = () => teams.value;
 const getCurrentTeam = () => currentTeam.value;
+
+const getGameName = () => gameName.value;
 
 const selectNextTeam = () => {
     const teamIndex = teams.value.indexOf(currentTeam.value);
@@ -42,6 +45,7 @@ const setupData = () => {
     teams.value = teamsJson.teams;
     setQuestionValues();
     currentTeam.value = teams.value[0];
+    gameName.value = questions.value.gameName ? questions.value.gameName : "GAME NAME";
 };
 
 const setQuestionValues = () => {
@@ -62,6 +66,7 @@ export function useGameStore() {
         getQuestions,
         getTeams,
         getCurrentTeam,
+        getGameName,
         selectNextTeam,
         setQuestionCorrect,
         setQuestionIncorrect,

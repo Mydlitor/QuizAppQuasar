@@ -52,7 +52,6 @@ const onAnsweredCorrectly = () => {
     window.setTimeout(() => {
         qDialogRef.value.hide()
     }, 3000);
-
 }
 
 const onAnsweredIncorrectly = () => {

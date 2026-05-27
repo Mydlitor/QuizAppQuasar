@@ -17,7 +17,6 @@
 
 <script setup>
 import { useGameStore } from 'src/stores/gameStore';
-import { useQuasar } from 'quasar'
 import { computed, onMounted, ref } from 'vue';
 import QuestionElement from 'components/QuestionElement.vue';
 import QuestionDialog from 'src/components/QuestionDialog.vue';
@@ -25,8 +24,7 @@ import QuestionDialog from 'src/components/QuestionDialog.vue';
 const gameStore = useGameStore();
 
 const questions = computed(() => gameStore.getQuestions())
-const teams = ref([])
-const $q = useQuasar()
+const teams = computed(() => gameStore.getTeams())
 const isDialogShown = ref(false)
 const currentQuestion = ref(null)
 const currentTeam = ref(null)
@@ -50,10 +48,7 @@ const onDialogHide = () => {
 }
 
 onMounted(() => {
-    $q.dark.set(true)
     gameStore.setupData()
-    questions.value = gameStore.getQuestions()
-    teams.value = gameStore.getTeams();
     currentTeam.value = gameStore.getCurrentTeam()
 })
 </script>
