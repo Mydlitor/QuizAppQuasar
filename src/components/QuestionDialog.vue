@@ -1,7 +1,7 @@
 <template>
     <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow" no-backdrop-dismiss
         no-shake>
-        <div class="dialog-main">
+        <div class="dialog-main" ref="dialogRef">
             <q-linear-progress class="linear-progress" :value="progressRemaining" />
             <h5>{{ remaining }}</h5>
             <div class="dialog-content">
@@ -42,13 +42,17 @@ const progressRemaining = ref(1.0)
 const isSteal = ref(false);
 const teamsOptions = ref([])
 const selectedTeam = ref(null)
+const dialogRef = ref(null)
 
 const onAnsweredCorrectly = () => {
+    stopTimer()
+    animateBorder("green");
     emit('answered-correctly', props.question, selectedTeam.value)
 }
 
 const onAnsweredIncorrectly = () => {
-    toggleTimer()
+    stopTimer()
+    animateBorder("red");
     emit('answered-incorrectly', props.question)
     teamsOptions.value = teamsOptions.value.filter(t => t != selectedTeam.value)
 }
@@ -86,6 +90,16 @@ const onDialogBeforeHide = () => {
     emit('hide-dialog')
 }
 
+const animateBorder = (color) => {
+    if (!dialogRef.value)
+        return;
+    dialogRef.value.style.borderColor = color;
+    window.setTimeout(() => {
+        dialogRef.value.style.borderColor = 'transparent';
+
+    }, 1000);
+}
+
 onKeyStroke(' ', e => {
     e.preventDefault()
     toggleTimer()
@@ -113,6 +127,8 @@ const emit = defineEmits(['answered-correctly', 'answered-incorrectly', 'hide-di
     display: flex;
     flex-direction: column;
     align-items: center;
+    border: solid 3px transparent;
+    transition: border-color 200ms ease;
 }
 
 .dialog-content {

@@ -9,7 +9,6 @@
                     :question="question" @click="showQuestionDialog(question)" />
             </div>
         </div>
-        <p>{{ currentTeam }}</p>
         <QuestionDialog v-model="isDialogShown" :question="currentQuestion" :teams="teams" :current-team="currentTeam"
             @answered-correctly="onAnsweredCorrectly" @answered-incorrectly="onAnsweredIncorrectly"
             @hide-dialog="onDialogHide" />
