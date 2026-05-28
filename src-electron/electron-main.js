@@ -1,9 +1,9 @@
-import { app, BrowserWindow, Menu } from "electron";
+import { app, BrowserWindow, Menu, ipcMain } from "electron";
 import path from "node:path";
 import os from "node:os";
 import { fileURLToPath } from "node:url";
+import fs from "node:fs/promises";
 
-// needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
 
 const currentDir = fileURLToPath(new URL(".", import.meta.url));
@@ -11,9 +11,6 @@ const currentDir = fileURLToPath(new URL(".", import.meta.url));
 let mainWindow;
 
 async function createWindow() {
-    /**
-     * Initial window options
-     */
     mainWindow = new BrowserWindow({
         icon: path.resolve(currentDir, "icons/icon.png"), // tray icon
         width: 1000,
@@ -22,7 +19,6 @@ async function createWindow() {
         autoHideMenuBar: true,
         webPreferences: {
             contextIsolation: true,
-            // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
             preload: path.resolve(
                 currentDir,
                 path.join(
@@ -33,7 +29,6 @@ async function createWindow() {
         },
     });
 
-    // Remove the native app menu so it does not appear on Alt.
     Menu.setApplicationMenu(null);
     mainWindow.setMenuBarVisibility(false);
 
@@ -44,10 +39,8 @@ async function createWindow() {
     }
 
     if (process.env.DEBUGGING) {
-        // if on DEV or Production with debug enabled
         mainWindow.webContents.openDevTools();
     } else {
-        // we're on production; no access to devtools pls
         mainWindow.webContents.on("devtools-opened", () => {
             mainWindow.webContents.closeDevTools();
         });
@@ -57,6 +50,41 @@ async function createWindow() {
         mainWindow = null;
     });
 }
+
+function getTeamsFilePath() {
+    return path.join(app.getPath("userData"), "teams.json");
+}
+
+async function saveTeamsToDiskAsync(filepath, data) {
+    const dir = path.dirname(filepath);
+    await fs.mkdir(dir, { recursive: true });
+    const tmp = filepath + ".tmp";
+    const json = JSON.stringify({ teams: data }, null, 2);
+    await fs.writeFile(tmp, json, "utf8");
+    await fs.rename(tmp, filepath);
+}
+
+async function loadTeamsFromDisk(filepath) {
+    try {
+        const txt = await fs.readFile(filepath, "utf8");
+        return JSON.parse(txt);
+    } catch {
+        return null;
+    }
+}
+
+ipcMain.handle("teams:save", async (event, teams) => {
+    if (!Array.isArray(teams)) throw new Error("Invalid teams data");
+    const file = getTeamsFilePath();
+    await saveTeamsToDiskAsync(file, teams);
+    return { ok: true };
+});
+
+ipcMain.handle("teams:load", async () => {
+    const file = getTeamsFilePath();
+    const data = await loadTeamsFromDisk(file);
+    return data; // may be null
+});
 
 app.whenReady().then(createWindow);
 

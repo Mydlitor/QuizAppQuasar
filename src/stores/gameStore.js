@@ -40,13 +40,46 @@ const setQuestionIncorrect = (question) => {
     q.isAnswered = false;
 };
 
-const updateTeamsData = (newTeamsData) => {
-    teams.value = newTeamsData;
+const cloneTeamsData = (data) => JSON.parse(JSON.stringify(data));
+
+const updateTeamsData = async (newTeamsData) => {
+    const plainTeamsData = cloneTeamsData(newTeamsData);
+    teams.value = plainTeamsData;
+    try {
+        if (typeof window !== "undefined" && window.api && window.api.saveTeams) {
+            await window.api.saveTeams(plainTeamsData);
+        }
+    } catch (err) {
+        console.error("Failed to save teams to file:", err);
+    }
 };
 
-const setupData = () => {
+const setupData = async () => {
     questions.value = questionsJson;
-    teams.value = teamsJson.teams;
+    let savedTeams = null;
+    try {
+        if (typeof window !== "undefined" && window.api && window.api.loadTeams) {
+            savedTeams = await window.api.loadTeams();
+        }
+    } catch (err) {
+        console.warn("Failed to load saved teams from file:", err);
+        savedTeams = null;
+    }
+
+    if (savedTeams && Array.isArray(savedTeams.teams)) {
+        teams.value = cloneTeamsData(savedTeams.teams);
+    } else {
+        teams.value = cloneTeamsData(teamsJson.teams);
+        // persist initial copy if possible
+        try {
+            if (typeof window !== "undefined" && window.api && window.api.saveTeams) {
+                await window.api.saveTeams(teams.value);
+            }
+        } catch (err) {
+            console.warn("Failed to save initial teams to file:", err);
+        }
+    }
+
     setQuestionValues();
     currentTeam.value = teams.value[0];
     gameName.value = questions.value.gameName ? questions.value.gameName : "GAME NAME";

@@ -32,8 +32,8 @@ const onOpenQuestionSettings = () => {
     console.log("questionsettings opened")
 }
 
-const onTeamSettingsSave = (newTeamsData) => {
-    gameStore.updateTeamsData(newTeamsData);
+const onTeamSettingsSave = async (newTeamsData) => {
+    await gameStore.updateTeamsData(newTeamsData);
 }
 
 //>edit questions
@@ -42,8 +42,8 @@ const onTeamSettingsSave = (newTeamsData) => {
 // import { useGameStore } from 'src/stores/gameStore';
 
 // const gameStore = useGameStore()
-onBeforeMount(() => {
-    gameStore.setupData()
+onBeforeMount(async () => {
+    await gameStore.setupData()
 })
 </script>
 
