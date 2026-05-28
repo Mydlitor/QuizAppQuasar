@@ -6,18 +6,24 @@
                 <q-table :columns="columns" :rows="teamsData" row-key="name" hide-pagination flat bordered
                     separator="cell">
                     <template v-slot:body="props">
-                        <q-tr :props="props" @contextmenu.prevent="onRowContextMenu($event, props.row)">
-                            <q-td key="index" :props="props" style="width: 20%;">
+                        <q-tr :props="props">
+                            <q-td key="index" :props="props" style="width: 20%;"
+                                @contextmenu.prevent="onRowContextMenu($event, props.row)">
                                 {{ props.rowIndex + 1 }}
                             </q-td>
                             <q-td key="teamName" :props="props">
                                 {{ props.row.name }}
-                                <q-popup-edit v-model="props.row.name" title="Edit the Name" auto-save v-slot="scope">
-                                    <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set" />
+                                <q-popup-edit v-model="props.row.name" auto-save v-slot="scope">
+                                    <q-input v-model="scope.value" dense autofocus borderless />
                                 </q-popup-edit>
                             </q-td>
                             <q-td key="color" :props="props" style="width: 20%;">
                                 {{ props.row.color }}
+                                <q-popup-edit v-model="props.row.color" buttons v-slot="scope">
+                                    <q-color v-model="scope.value" no-header no-footer default-view="palette"
+                                        class="my-picker" format-model="hex" />
+
+                                </q-popup-edit>
                             </q-td>
                         </q-tr>
                     </template>
@@ -35,7 +41,6 @@
                 </q-item>
             </q-list>
         </q-menu>
-
     </q-dialog>
 </template>
 
@@ -76,6 +81,11 @@ const onRowContextMenu = (event, team) => {
     selectedContextTeam.value = team
     teamContextMenuRef.value?.show(event)
 }
+
+// const onColorConextMenu = (event, team) => {
+//     selectedContextTeam.value = team
+//     teamContextMenuRef.value?.show(event)
+// }
 
 const onRemoveTeam = () => {
     teamsData.value = teamsData.value.filter((t) => { return t != selectedContextTeam.value })
