@@ -17,7 +17,7 @@
                                     <q-input v-model="scope.value" dense autofocus borderless />
                                 </q-popup-edit>
                             </q-td>
-                            <q-td key="color" :props="props" style="width: 20%;">
+                            <q-td key="color" :props="props" style="width: 20%;" :style="{ 'color': props.row.color }">
                                 {{ props.row.color }}
                                 <q-popup-edit v-model="props.row.color" buttons v-slot="scope">
                                     <q-color v-model="scope.value" no-header no-footer default-view="palette"
