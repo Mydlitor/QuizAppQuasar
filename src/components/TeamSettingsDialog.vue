@@ -50,7 +50,7 @@
 //option to rename team
 //option to change color
 
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, defineEmits } from 'vue';
 
 const teamsData = ref([])
 const selectedContextTeam = ref(null)
