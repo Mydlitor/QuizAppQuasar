@@ -16,7 +16,7 @@
                         <q-menu>
                             <q-list>
                                 <q-item clickable v-close-popup v-for="team in teamsOptions" v-bind:key="team.name"
-                                    @click="selectTeam(team)">
+                                    @click="onTeamSelect(team)">
                                     <q-item-section>
                                         {{ team.name }}
                                     </q-item-section>
@@ -61,7 +61,7 @@ const onAnsweredIncorrectly = () => {
     teamsOptions.value = teamsOptions.value.filter(t => t != selectedTeam.value)
 }
 
-const selectTeam = (team) => {
+const onTeamSelect = (team) => {
     selectedTeam.value = team;
 }
 

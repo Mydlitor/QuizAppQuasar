@@ -8,23 +8,32 @@
             <q-btn label="TEAM SETTINGS" @click="onOpenTeamSettings" />
             <q-btn label="QUESTION SETTINGS" @click="onOpenQuestionSettings" />
         </div>
+        <team-settings-dialog v-model="isTeamSettingsDialogShown" :teams="teams" @save-changes="onTeamSettingsSave" />
     </q-page>
 </template>
 
 <script setup>
-import { ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount, computed } from 'vue';
 import { useGameStore } from 'src/stores/gameStore';
+import TeamSettingsDialog from 'src/components/TeamSettingsDialog.vue';
 
 const gameStore = useGameStore();
 
-const gameName = ref(null)
+const gameName = computed(() => gameStore.getGameName())
+//const questions = computed(() => gameStore.getQuestions())
+const teams = computed(() => gameStore.getTeams())
+const isTeamSettingsDialogShown = ref(false)
 
 const onOpenTeamSettings = () => {
-    console.log("teamsettings opened")
+    isTeamSettingsDialogShown.value = true;
 }
 
 const onOpenQuestionSettings = () => {
     console.log("questionsettings opened")
+}
+
+const onTeamSettingsSave = (newTeamsData) => {
+    gameStore.updateTeamsData(newTeamsData);
 }
 
 //>edit questions
@@ -35,7 +44,6 @@ const onOpenQuestionSettings = () => {
 // const gameStore = useGameStore()
 onBeforeMount(() => {
     gameStore.setupData()
-    gameName.value = gameStore.getGameName()
 })
 </script>
 

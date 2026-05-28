@@ -40,6 +40,10 @@ const setQuestionIncorrect = (question) => {
     q.isAnswered = false;
 };
 
+const updateTeamsData = (newTeamsData) => {
+    teams.value = newTeamsData;
+};
+
 const setupData = () => {
     questions.value = questionsJson;
     teams.value = teamsJson.teams;
@@ -70,6 +74,7 @@ export function useGameStore() {
         selectNextTeam,
         setQuestionCorrect,
         setQuestionIncorrect,
+        updateTeamsData,
         setupData,
     };
 }
