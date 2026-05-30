@@ -52,7 +52,11 @@ async function createWindow() {
 }
 
 function getTeamsFilePath() {
-    return path.join(app.getPath("userData"), "teams.json");
+    return path.join(app.getPath("userData"), "QuizApp", "teams.json");
+}
+
+function getQuestionsFilePath() {
+    return path.join(app.getPath("userData"), "QuizApp", "questions.json");
 }
 
 async function saveTeamsToDiskAsync(filepath, data) {
@@ -60,6 +64,15 @@ async function saveTeamsToDiskAsync(filepath, data) {
     await fs.mkdir(dir, { recursive: true });
     const tmp = filepath + ".tmp";
     const json = JSON.stringify({ teams: data }, null, 2);
+    await fs.writeFile(tmp, json, "utf8");
+    await fs.rename(tmp, filepath);
+}
+
+async function saveQuestionsToDiskAsync(filepath, data) {
+    const dir = path.dirname(filepath);
+    await fs.mkdir(dir, { recursive: true });
+    const tmp = filepath + ".tmp";
+    const json = JSON.stringify(data, null, 2);
     await fs.writeFile(tmp, json, "utf8");
     await fs.rename(tmp, filepath);
 }
@@ -73,16 +86,36 @@ async function loadTeamsFromDisk(filepath) {
     }
 }
 
+async function loadQuestionsFromDisk(filepath) {
+    try {
+        const txt = await fs.readFile(filepath, "utf8");
+        return JSON.parse(txt);
+    } catch {
+        return null;
+    }
+}
+
 ipcMain.handle("teams:save", async (event, teams) => {
-    if (!Array.isArray(teams)) throw new Error("Invalid teams data");
     const file = getTeamsFilePath();
     await saveTeamsToDiskAsync(file, teams);
+    return { ok: true };
+});
+
+ipcMain.handle("questions:save", async (event, questions) => {
+    const file = getQuestionsFilePath();
+    await saveQuestionsToDiskAsync(file, questions);
     return { ok: true };
 });
 
 ipcMain.handle("teams:load", async () => {
     const file = getTeamsFilePath();
     const data = await loadTeamsFromDisk(file);
+    return data; // may be null
+});
+
+ipcMain.handle("questions:load", async () => {
+    const file = getQuestionsFilePath();
+    const data = await loadQuestionsFromDisk(file);
     return data; // may be null
 });
 

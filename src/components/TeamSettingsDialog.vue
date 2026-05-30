@@ -4,17 +4,18 @@
         <div class="team-settings-main">
             <div class="team-data-table">
                 <q-table :columns="columns" :rows="teamsData" row-key="name" hide-pagination flat bordered
-                    separator="cell">
+                    separator="cell" :rows-per-page-options="[0]">
                     <template v-slot:body="props">
-                        <q-tr :props="props">
-                            <q-td key="index" :props="props" style="width: 20%;"
-                                @contextmenu.prevent="onRowContextMenu($event, props.row)">
+                        <q-tr :props="props" @contextmenu.prevent="onRowContextMenu($event, props.row)">
+                            <q-td key="index" :props="props" style="width: 20%;">
                                 {{ props.rowIndex + 1 }}
                             </q-td>
                             <q-td key="teamName" :props="props">
                                 {{ props.row.name }}
-                                <q-popup-edit v-model="props.row.name" auto-save v-slot="scope">
-                                    <q-input v-model="scope.value" dense autofocus borderless />
+                                <q-popup-edit v-model="props.row.name" auto-save v-slot="scope"
+                                    :validate="validateNewTeam">
+                                    <q-input v-model="scope.value" dense autofocus borderless :error="teamsError"
+                                        :error-message="teamsErrorMessage" @keyup.enter="scope.set" />
                                 </q-popup-edit>
                             </q-td>
                             <q-td key="color" :props="props" style="width: 20%;" :style="{ 'color': props.row.color }">
@@ -27,11 +28,19 @@
                             </q-td>
                         </q-tr>
                     </template>
+                    <template v-slot:bottom-row>
+                        <q-tr>
+                            <q-td colspan="100%" style="text-align: center; cursor: pointer;" @click="onAddTeam">
+                                <q-icon :name="matAddCircle" style="margin-right: 0.5rem;" />
+                                <span>ADD TEAM</span>
+                            </q-td>
+                        </q-tr>
+                    </template>
                 </q-table>
             </div>
             <div class="buttons">
-                <q-btn label="SAVE" @click="onSaveButtonClicked" />
-                <q-btn label="CANCEL" @click="onCancelButtonClicked" />
+                <q-btn label="SAVE" @click="onSave" />
+                <q-btn label="CANCEL" @click="onCancel" />
             </div>
         </div>
         <q-menu ref="teamContextMenuRef" anchor="top left" self="top left" context-menu auto-close>
@@ -51,6 +60,10 @@
 //option to change color
 
 import { ref, defineEmits } from 'vue';
+import { useQuasar } from 'quasar';
+import { matAddCircle } from '@quasar/extras/material-icons'
+
+const $q = useQuasar();
 
 const teamsData = ref([])
 const selectedContextTeam = ref(null)
@@ -77,8 +90,32 @@ const columns = [
 ]
 const qDialogRef = ref(null)
 
+const teamsError = ref(false)
+const teamsErrorMessage = ref('')
+
+const validateNewTeam = (val) => {
+    if (teamsData.value.some(t => t.name === val)) {
+        teamsError.value = true;
+        teamsErrorMessage.value = "EACH TEAM MUST HAVE UNIQUE NAME"
+        return false;
+    }
+    return true;
+}
+
+const validateAllTeams = () => {
+    let nameSet = new Set(teamsData.value.map(t => t.name))
+    let colorSet = new Set(teamsData.value.map(t => t.color))
+    if (nameSet.size != teamsData.value.length || colorSet.size != teamsData.value.length) {
+        console.log(nameSet.size, colorSet.size, teamsData.value.length)
+        return false;
+    }
+    return true;
+}
+
 const onRowContextMenu = (event, team) => {
-    selectedContextTeam.value = team
+    console.log("team: ", team)
+    // store a shallow copy to avoid proxy/reference issues
+    selectedContextTeam.value = team;
     teamContextMenuRef.value?.show(event)
 }
 
@@ -88,24 +125,36 @@ const onRowContextMenu = (event, team) => {
 // }
 
 const onRemoveTeam = () => {
+    console.log("delete: ", selectedContextTeam.value)
     teamsData.value = teamsData.value.filter((t) => { return t != selectedContextTeam.value })
 }
 
-const onCancelButtonClicked = () => {
+const onAddTeam = () => {
+    teamsData.value.push({ name: "NEW TEAM", color: "white" })
+}
+
+const onCancel = () => {
     qDialogRef.value.hide()
 }
 
-const onSaveButtonClicked = () => {
+const onSave = () => {
+    if (validateAllTeams() === false) {
+        $q.notify({
+            message: "EACH TEAM MUST HAVE UNIQUE NAME AND COLOR"
+        })
+        return;
+    }
     emit('save-changes', teamsData.value)
     qDialogRef.value.hide()
 }
 
 const onDialogBeforeShow = () => {
+    console.log("before show")
     if (!props.teams) {
         teamsData.value = []
         return
     }
-    teamsData.value = props.teams;
+    teamsData.value = props.teams.map(t => ({ name: t.name, color: t.color }))
 }
 
 const onDialogBeforeHide = () => {

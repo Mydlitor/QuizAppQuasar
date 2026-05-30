@@ -40,10 +40,10 @@ const setQuestionIncorrect = (question) => {
     q.isAnswered = false;
 };
 
-const cloneTeamsData = (data) => JSON.parse(JSON.stringify(data));
+const cloneData = (data) => JSON.parse(JSON.stringify(data));
 
 const updateTeamsData = async (newTeamsData) => {
-    const plainTeamsData = cloneTeamsData(newTeamsData);
+    const plainTeamsData = cloneData(newTeamsData);
     teams.value = plainTeamsData;
     try {
         if (typeof window !== "undefined" && window.api && window.api.saveTeams) {
@@ -55,28 +55,42 @@ const updateTeamsData = async (newTeamsData) => {
 };
 
 const setupData = async () => {
-    questions.value = questionsJson;
     let savedTeams = null;
+    let savedQuestions = null;
     try {
         if (typeof window !== "undefined" && window.api && window.api.loadTeams) {
             savedTeams = await window.api.loadTeams();
+            savedQuestions = await window.api.loadQuestions();
         }
     } catch (err) {
-        console.warn("Failed to load saved teams from file:", err);
+        console.warn("Failed to load saved teams/questions from file:", err);
         savedTeams = null;
+        savedQuestions = null;
     }
 
     if (savedTeams && Array.isArray(savedTeams.teams)) {
-        teams.value = cloneTeamsData(savedTeams.teams);
+        teams.value = cloneData(savedTeams.teams);
     } else {
-        teams.value = cloneTeamsData(teamsJson.teams);
-        // persist initial copy if possible
+        teams.value = teamsJson.teams;
         try {
             if (typeof window !== "undefined" && window.api && window.api.saveTeams) {
-                await window.api.saveTeams(teams.value);
+                await window.api.saveTeams(cloneData(teams.value));
             }
         } catch (err) {
             console.warn("Failed to save initial teams to file:", err);
+        }
+    }
+
+    if (savedQuestions) {
+        questions.value = cloneData(savedQuestions);
+    } else {
+        questions.value = questionsJson;
+        try {
+            if (typeof window !== "undefined" && window.api && window.api.saveQuestions) {
+                await window.api.saveQuestions(cloneData(questions.value));
+            }
+        } catch (err) {
+            console.warn("Failed to save initial questions to file:", err);
         }
     }
 
