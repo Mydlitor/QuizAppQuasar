@@ -1,12 +1,10 @@
-# Quiz App Quasar (quiz-app-quasar)
+# Quiz App Quasar
 
 A Quasar Project
 
 ## Install the dependencies
 
 ```bash
-yarn
-# or
 npm install
 ```
 
@@ -14,30 +12,6 @@ npm install
 
 ```bash
 quasar dev
+#or, to run electron app
+quasar dev -m electron
 ```
-
-### Lint the files
-
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-### Format the files
-
-```bash
-yarn format
-# or
-npm run format
-```
-
-### Build the app for production
-
-```bash
-quasar build
-```
-
-### Customize the configuration
-
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
