@@ -10,17 +10,19 @@
                             <q-td key="index" :props="props" style="width: 20%;">
                                 {{ props.rowIndex + 1 }}
                             </q-td>
-                            <q-td key="teamName" :props="props">
+                            <q-td key="teamName" :props="props" @dblclick="teamNamePopupRefs[props.rowIndex]?.show()">
                                 {{ props.row.name }}
-                                <q-popup-edit v-model="props.row.name" auto-save v-slot="scope"
-                                    :validate="validateNewTeam">
+                                <q-popup-edit v-model="props.row.name" auto-save v-slot="scope" no-parent-event
+                                    :validate="validateNewTeam" :ref="el => { teamNamePopupRefs[props.rowIndex] = el }">
                                     <q-input v-model="scope.value" dense autofocus borderless :error="teamsError"
                                         :error-message="teamsErrorMessage" @keyup.enter="scope.set" />
                                 </q-popup-edit>
                             </q-td>
-                            <q-td key="color" :props="props" style="width: 20%;" :style="{ 'color': props.row.color }">
+                            <q-td key="color" :props="props" style="width: 20%;" :style="{ 'color': props.row.color }"
+                                @dblclick="teamColorPopupRefs[props.rowIndex]?.show()">
                                 {{ props.row.color }}
-                                <q-popup-edit v-model="props.row.color" buttons v-slot="scope">
+                                <q-popup-edit v-model="props.row.color" buttons v-slot="scope" no-parent-event
+                                    :ref="el => { teamColorPopupRefs[props.rowIndex] = el }">
                                     <q-color v-model="scope.value" no-header no-footer default-view="palette"
                                         class="my-picker" format-model="hex" />
 
@@ -59,7 +61,7 @@
 //option to rename team
 //option to change color
 
-import { ref, defineEmits } from 'vue';
+import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { matAddCircle } from '@quasar/extras/material-icons'
 
@@ -68,6 +70,8 @@ const $q = useQuasar();
 const teamsData = ref([])
 const selectedContextTeam = ref(null)
 const teamContextMenuRef = ref(null)
+const teamNamePopupRefs = ref([])
+const teamColorPopupRefs = ref([])
 const columns = [
     {
         name: 'index',
@@ -133,10 +137,6 @@ const onAddTeam = () => {
     teamsData.value.push({ name: "NEW TEAM", color: "white" })
 }
 
-const onCancel = () => {
-    qDialogRef.value.hide()
-}
-
 const onSave = () => {
     if (validateAllTeams() === false) {
         $q.notify({
@@ -145,6 +145,10 @@ const onSave = () => {
         return;
     }
     emit('save-changes', teamsData.value)
+    qDialogRef.value.hide()
+}
+
+const onCancel = () => {
     qDialogRef.value.hide()
 }
 

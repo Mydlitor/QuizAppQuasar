@@ -24,5 +24,10 @@ html {
     overflow: auto;
     height: 100%;
 }
+
+* {
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
 </style>
-<!--<q-layout view="lHh Lpr fFf">-->

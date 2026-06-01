@@ -9,6 +9,7 @@
             <q-btn label="QUESTION SETTINGS" @click="onOpenQuestionSettings" />
         </div>
         <team-settings-dialog v-model="isTeamSettingsDialogShown" :teams="teams" @save-changes="onTeamSettingsSave" />
+        <question-settings-dialog v-model="isQuestionSettingsDialogShown" :questions="questions" />
     </q-page>
 </template>
 
@@ -16,20 +17,23 @@
 import { ref, onBeforeMount, computed } from 'vue';
 import { useGameStore } from 'src/stores/gameStore';
 import TeamSettingsDialog from 'src/components/TeamSettingsDialog.vue';
+import QuestionSettingsDialog from 'src/components/QuestionSettingsDialog.vue';
 
 const gameStore = useGameStore();
 
 const gameName = computed(() => gameStore.getGameName())
 //const questions = computed(() => gameStore.getQuestions())
 const teams = computed(() => gameStore.getTeams())
+const questions = computed(() => gameStore.getQuestions())
 const isTeamSettingsDialogShown = ref(false)
+const isQuestionSettingsDialogShown = ref(false)
 
 const onOpenTeamSettings = () => {
     isTeamSettingsDialogShown.value = true;
 }
 
 const onOpenQuestionSettings = () => {
-    console.log("questionsettings opened")
+    isQuestionSettingsDialogShown.value = true;
 }
 
 const onTeamSettingsSave = async (newTeamsData) => {
