@@ -50,7 +50,21 @@ const updateTeamsData = async (newTeamsData) => {
             await window.api.saveTeams(plainTeamsData);
         }
     } catch (err) {
-        console.error("Failed to save teams to file:", err);
+        console.error("Failed to save teams to file: ", err);
+    }
+};
+
+const updateQuestionsData = async (newQuestionsData) => {
+    const plainQuestionsData = cloneData(newQuestionsData);
+    questions.value = plainQuestionsData;
+    console.log("plain: ", plainQuestionsData);
+    console.log("update, ", questions.value);
+    try {
+        if (typeof window !== "undefined" && window.api && window.api.saveQuestions) {
+            await window.api.saveQuestions(plainQuestionsData);
+        }
+    } catch (err) {
+        console.error("Failed to save questions to file: ", err);
     }
 };
 
@@ -122,6 +136,7 @@ export function useGameStore() {
         setQuestionCorrect,
         setQuestionIncorrect,
         updateTeamsData,
+        updateQuestionsData,
         setupData,
     };
 }

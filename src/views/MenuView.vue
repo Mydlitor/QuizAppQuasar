@@ -9,7 +9,8 @@
             <q-btn label="QUESTION SETTINGS" @click="onOpenQuestionSettings" />
         </div>
         <team-settings-dialog v-model="isTeamSettingsDialogShown" :teams="teams" @save-changes="onTeamSettingsSave" />
-        <question-settings-dialog v-model="isQuestionSettingsDialogShown" :questions="questions" />
+        <question-settings-dialog v-model="isQuestionSettingsDialogShown" :questions="questions"
+            @save-changes="onQuestionSettingsSave" />
     </q-page>
 </template>
 
@@ -39,6 +40,10 @@ const onOpenQuestionSettings = () => {
 
 const onTeamSettingsSave = async (newTeamsData) => {
     await gameStore.updateTeamsData(newTeamsData);
+}
+
+const onQuestionSettingsSave = async (newQuestionsData) => {
+    await gameStore.updateQuestionsData(newQuestionsData);
 }
 
 //>edit questions
