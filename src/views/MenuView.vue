@@ -34,6 +34,7 @@ const onOpenTeamSettings = () => {
 
 const onOpenQuestionSettings = () => {
     isQuestionSettingsDialogShown.value = true;
+    console.log(questions.value)
 }
 
 const onTeamSettingsSave = async (newTeamsData) => {

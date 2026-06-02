@@ -3,8 +3,8 @@
         no-shake ref="qDialogRef" class="q-dialog">
         <div class="question-settings-main">
             <div class="question-data-table">
-                <q-table :columns="columns" :rows="questionData" row-key="name" hide-pagination flat bordered
-                    separator="cell" :rows-per-page-options="[0]">
+                <q-table class="categories-table" :columns="columns" :rows="questionData" row-key="name" hide-pagination
+                    flat bordered separator="cell" :rows-per-page-options="[0]" virtual-scroll>
                     <template v-slot:body="props">
                         <q-tr :props="props" @click="props.expand = !props.expand">
                             <q-td key="index" :props="props" style="width: 20%;">
@@ -17,6 +17,24 @@
                                 {{ props.row.questions.length }}
                             </q-td>
                         </q-tr>
+                        <q-tr v-show="props.expand" :props="props">
+                            <q-td colspan="100%">
+                                <q-table :columns="questionColumns" :rows="props.row.questions" row-key="id"
+                                    hide-pagination flat bordered separator="cell" :rows-per-page-options="[0]">
+                                    <template v-slot:body="props">
+                                        <q-tr :props="props">
+                                            <q-td key="index" :props="props" style="width: 20%;">
+                                                {{ props.rowIndex + 1 }}
+                                            </q-td>
+                                            <q-td key="text" :props="props">
+                                                {{ props.row.text }}
+                                            </q-td>
+                                        </q-tr>
+                                    </template>
+                                </q-table>
+                            </q-td>
+                        </q-tr>
+
                     </template>
                     <template v-slot:bottom-row>
                         <q-tr>
@@ -41,9 +59,10 @@
 import { ref } from 'vue';
 
 // import { useQuasar } from 'quasar';
-// import { matAddCircle } from '@quasar/extras/material-icons'
+import { matAddCircle } from '@quasar/extras/material-icons'
 
 // const $q = useQuasar();
+
 
 const questionData = ref([])
 const columns = [
@@ -64,6 +83,21 @@ const columns = [
         align: 'center',
         label: 'Number of questions'
     }
+]
+const questionColumns = [
+    {
+        name: 'index',
+        align: 'center',
+        label: 'No.',
+        field: 'index'
+    },
+    {
+        name: 'text',
+        align: 'left',
+        label: 'Question',
+        field: 'text'
+    },
+
 ]
 const qDialogRef = ref(null)
 
@@ -118,6 +152,10 @@ const props = defineProps({
 
 .question-data-table {
     width: 100%;
+}
+
+.categories-table {
+    max-height: 60vh;
 }
 
 .buttons {
