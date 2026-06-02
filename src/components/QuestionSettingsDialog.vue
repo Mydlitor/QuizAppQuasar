@@ -6,7 +6,8 @@
                 <q-table class="categories-table" :columns="columns" :rows="questionData.categories" row-key="name"
                     hide-pagination flat bordered separator="cell" :rows-per-page-options="[0]" virtual-scroll>
                     <template v-slot:body="props">
-                        <q-tr :props="props" @click="onRowClick(props)">
+                        <q-tr :props="props" @click="onRowClick(props)"
+                            @contextmenu.prevent="onCategoryRowContextMenu($event, props.row)">
                             <q-td key="index" :props="props" style="width: 20%;">
                                 {{ props.rowIndex + 1 }}
                             </q-td>
@@ -65,7 +66,13 @@
                 <q-btn label="CANCEL" @click="onCancel" />
             </div>
         </div>
-
+        <q-menu ref="categoryContextMenuRef" anchor="top left" self="top left" context-menu auto-close>
+            <q-list>
+                <q-item clickable v-close-popup @click="onRemoveCategory">
+                    <q-item-section>REMOVE CATEGORY</q-item-section>
+                </q-item>
+            </q-list>
+        </q-menu>
     </q-dialog>
 </template>
 
@@ -114,6 +121,8 @@ const questionColumns = [
 
 ]
 const qDialogRef = ref(null)
+const selectedContextCategory = ref(null)
+const categoryContextMenuRef = ref(null)
 const categoryPopupRefs = ref([])
 const questionPopupRefs = ref([])
 const categoriesError = ref(false)
@@ -132,6 +141,15 @@ const onRowClick = (props) => {
         props.expand = !props.expand
         clickTimer.value = null
     }, clickDelay)
+}
+
+const onCategoryRowContextMenu = (event, category) => {
+    selectedContextCategory.value = category;
+    categoryContextMenuRef.value?.show(event)
+}
+
+const onRemoveCategory = () => {
+    questionData.value.categories = questionData.value.categories.filter((t) => { return t != selectedContextCategory.value })
 }
 
 const onCategoryDblClick = (rowIndex) => {

@@ -48,7 +48,7 @@
         <q-menu ref="teamContextMenuRef" anchor="top left" self="top left" context-menu auto-close>
             <q-list>
                 <q-item clickable v-close-popup @click="onRemoveTeam">
-                    <q-item-section>Remove team</q-item-section>
+                    <q-item-section>REMOVE TEAM</q-item-section>
                 </q-item>
             </q-list>
         </q-menu>
