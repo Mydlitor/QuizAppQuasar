@@ -7,7 +7,7 @@
                     hide-pagination flat bordered separator="cell" :rows-per-page-options="[0]" virtual-scroll>
                     <template v-slot:body="props">
                         <q-tr :props="props" @click="onRowClick(props)"
-                            @contextmenu.prevent="onCategoryRowContextMenu($event, props.row)">
+                            @contextmenu.prevent="onCategoryRowContextMenu($event, props.rowIndex)">
                             <q-td key="index" :props="props" style="width: 20%;">
                                 {{ props.rowIndex + 1 }}
                             </q-td>
@@ -29,7 +29,8 @@
                                 <q-table :columns="questionColumns" :rows="props.row.questions" row-key="id"
                                     hide-pagination flat bordered separator="cell" :rows-per-page-options="[0]">
                                     <template v-slot:body="questionProps">
-                                        <q-tr :props="questionProps">
+                                        <q-tr :props="questionProps"
+                                            @contextmenu.prevent.stop="onQuestionRowContextMenu($event, props.rowIndex, questionProps.rowIndex)">
                                             <q-td key="index" :props="questionProps" style="width: 20%;">
                                                 {{ questionProps.rowIndex + 1 }}
                                             </q-td>
@@ -70,6 +71,13 @@
             <q-list>
                 <q-item clickable v-close-popup @click="onRemoveCategory">
                     <q-item-section>REMOVE CATEGORY</q-item-section>
+                </q-item>
+            </q-list>
+        </q-menu>
+        <q-menu ref="questionContextMenuRef" anchor="top left" self="top left" context-menu auto-close>
+            <q-list>
+                <q-item clickable v-close-popup @click="onRemoveQuestion">
+                    <q-item-section>REMOVE QUESTION</q-item-section>
                 </q-item>
             </q-list>
         </q-menu>
@@ -121,8 +129,10 @@ const questionColumns = [
 
 ]
 const qDialogRef = ref(null)
-const selectedContextCategory = ref(null)
+const selectedContextCategoryIndex = ref(-1)
+const selectedContextQuestionIndex = ref(-1)
 const categoryContextMenuRef = ref(null)
+const questionContextMenuRef = ref(null)
 const categoryPopupRefs = ref([])
 const questionPopupRefs = ref([])
 const categoriesError = ref(false)
@@ -143,13 +153,29 @@ const onRowClick = (props) => {
     }, clickDelay)
 }
 
-const onCategoryRowContextMenu = (event, category) => {
-    selectedContextCategory.value = category;
+const onCategoryRowContextMenu = (event, categoryIndex) => {
+    selectedContextCategoryIndex.value = categoryIndex;
     categoryContextMenuRef.value?.show(event)
 }
 
+const onQuestionRowContextMenu = (event, categoryIndex, questionIndex) => {
+    selectedContextCategoryIndex.value = categoryIndex;
+    selectedContextQuestionIndex.value = questionIndex;
+    questionContextMenuRef.value?.show(event)
+}
+
 const onRemoveCategory = () => {
-    questionData.value.categories = questionData.value.categories.filter((t) => { return t != selectedContextCategory.value })
+    if (selectedContextCategoryIndex.value === -1) {
+        return;
+    }
+    questionData.value.categories.splice(selectedContextCategoryIndex.value, 1)
+}
+
+const onRemoveQuestion = () => {
+    if (selectedContextCategoryIndex.value === -1 || selectedContextQuestionIndex.value === -1) {
+        return;
+    }
+    questionData.value.categories[selectedContextCategoryIndex.value].questions.splice(selectedContextQuestionIndex.value, 1)
 }
 
 const onCategoryDblClick = (rowIndex) => {
@@ -167,10 +193,6 @@ const onQuestionDblClick = (catIndex, qIndex) => {
     }
     showQuestionPopup(catIndex, qIndex)
 }
-
-// const questionsError = ref(false)
-// const questionsErrorMessage = ref('')
-
 
 const onAddCategory = () => {
     questionData.value.categories.push({ name: "NEW CATEGORY", questions: [] })
@@ -229,7 +251,6 @@ const onSave = () => {
         })
         return;
     }
-    console.log(questionData.value)
     emit('save-changes', questionData.value)
     qDialogRef.value.hide()
 }
@@ -240,7 +261,6 @@ const onCancel = () => {
 
 
 const onDialogBeforeShow = () => {
-    console.log("before show")
     if (!props.questions || !Array.isArray(props.questions.categories)) {
         questionData.value = []
         return

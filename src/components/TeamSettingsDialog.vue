@@ -6,7 +6,7 @@
                 <q-table :columns="columns" :rows="teamsData" row-key="name" hide-pagination flat bordered
                     separator="cell" :rows-per-page-options="[0]">
                     <template v-slot:body="props">
-                        <q-tr :props="props" @contextmenu.prevent="onRowContextMenu($event, props.row)">
+                        <q-tr :props="props" @contextmenu.prevent="onRowContextMenu($event, props.rowIndex)">
                             <q-td key="index" :props="props" style="width: 20%;">
                                 {{ props.rowIndex + 1 }}
                             </q-td>
@@ -56,11 +56,6 @@
 </template>
 
 <script setup>
-//show all teams
-//option to add and remove team
-//option to rename team
-//option to change color
-
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { matAddCircle } from '@quasar/extras/material-icons'
@@ -68,7 +63,7 @@ import { matAddCircle } from '@quasar/extras/material-icons'
 const $q = useQuasar();
 
 const teamsData = ref([])
-const selectedContextTeam = ref(null)
+const selectedContextTeamIndex = ref(-1)
 const teamContextMenuRef = ref(null)
 const teamNamePopupRefs = ref([])
 const teamColorPopupRefs = ref([])
@@ -110,27 +105,18 @@ const validateAllTeams = () => {
     let nameSet = new Set(teamsData.value.map(t => t.name))
     let colorSet = new Set(teamsData.value.map(t => t.color))
     if (nameSet.size != teamsData.value.length || colorSet.size != teamsData.value.length) {
-        console.log(nameSet.size, colorSet.size, teamsData.value.length)
         return false;
     }
     return true;
 }
 
-const onRowContextMenu = (event, team) => {
-    console.log("team: ", team)
-    // store a shallow copy to avoid proxy/reference issues
-    selectedContextTeam.value = team;
+const onRowContextMenu = (event, teamIndex) => {
+    selectedContextTeamIndex.value = teamIndex;
     teamContextMenuRef.value?.show(event)
 }
 
-// const onColorConextMenu = (event, team) => {
-//     selectedContextTeam.value = team
-//     teamContextMenuRef.value?.show(event)
-// }
-
 const onRemoveTeam = () => {
-    console.log("delete: ", selectedContextTeam.value)
-    teamsData.value = teamsData.value.filter((t) => { return t != selectedContextTeam.value })
+    teamsData.value.splice(selectedContextTeamIndex.value, 1);
 }
 
 const onAddTeam = () => {
@@ -153,7 +139,6 @@ const onCancel = () => {
 }
 
 const onDialogBeforeShow = () => {
-    console.log("before show")
     if (!props.teams) {
         teamsData.value = []
         return
