@@ -126,6 +126,10 @@ const setQuestionValues = () => {
     });
 };
 
+const quitApp = () => {
+    window.api.quitApp();
+};
+
 export function useGameStore() {
     return {
         getQuestions,
@@ -138,5 +142,6 @@ export function useGameStore() {
         updateTeamsData,
         updateQuestionsData,
         setupData,
+        quitApp,
     };
 }

@@ -13,4 +13,7 @@ contextBridge.exposeInMainWorld("api", {
     loadQuestions: async () => {
         return ipcRenderer.invoke("questions:load");
     },
+    quitApp: () => {
+        return ipcRenderer.invoke("app:quit");
+    },
 });

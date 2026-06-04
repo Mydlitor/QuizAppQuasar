@@ -8,6 +8,7 @@
             <q-btn label="TEAM SETTINGS" @click="onOpenTeamSettings" />
             <q-btn label="QUESTION SETTINGS" @click="onOpenQuestionSettings" />
         </div>
+        <q-btn label="EXIT" @click="onExit" />
         <team-settings-dialog v-model="isTeamSettingsDialogShown" :teams="teams" @save-changes="onTeamSettingsSave" />
         <question-settings-dialog v-model="isQuestionSettingsDialogShown" :questions="questions"
             @save-changes="onQuestionSettingsSave" />
@@ -44,6 +45,10 @@ const onTeamSettingsSave = async (newTeamsData) => {
 
 const onQuestionSettingsSave = async (newQuestionsData) => {
     await gameStore.updateQuestionsData(newQuestionsData);
+}
+
+const onExit = () => {
+    gameStore.quitApp();
 }
 
 //>edit questions

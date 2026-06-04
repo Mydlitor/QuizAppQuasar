@@ -2,6 +2,7 @@
     <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow" no-backdrop-dismiss
         no-shake ref="qDialogRef" class="q-dialog">
         <div class="question-settings-main">
+            {{ props.questions.gameName }}
             <div class="question-data-table">
                 <q-table class="categories-table" :columns="columns" :rows="questionData.categories" row-key="name"
                     hide-pagination flat bordered separator="cell" :rows-per-page-options="[0]" virtual-scroll>
@@ -93,7 +94,7 @@ import { matAddCircle } from '@quasar/extras/material-icons'
 const $q = useQuasar();
 
 
-const questionData = ref([])
+const questionData = ref(null)
 const columns = [
     {
         name: 'index',

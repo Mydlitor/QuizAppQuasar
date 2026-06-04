@@ -17,6 +17,7 @@ async function createWindow() {
         height: 600,
         useContentSize: true,
         autoHideMenuBar: true,
+        kiosk: true,
         webPreferences: {
             contextIsolation: true,
             preload: path.resolve(
@@ -94,6 +95,10 @@ async function loadQuestionsFromDisk(filepath) {
         return null;
     }
 }
+
+ipcMain.handle("app:quit", () => {
+    app.quit();
+});
 
 ipcMain.handle("teams:save", async (event, teams) => {
     const file = getTeamsFilePath();
