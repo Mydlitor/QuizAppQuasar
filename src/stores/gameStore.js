@@ -57,8 +57,7 @@ const updateTeamsData = async (newTeamsData) => {
 const updateQuestionsData = async (newQuestionsData) => {
     const plainQuestionsData = cloneData(newQuestionsData);
     questions.value = plainQuestionsData;
-    console.log("plain: ", plainQuestionsData);
-    console.log("update, ", questions.value);
+    validateQuestionValues();
     try {
         if (typeof window !== "undefined" && window.api && window.api.saveQuestions) {
             await window.api.saveQuestions(plainQuestionsData);
@@ -69,7 +68,6 @@ const updateQuestionsData = async (newQuestionsData) => {
 };
 
 const saveGameStatus = async () => {
-    console.log("savegamestatus");
     const plainQuestionsData = cloneData(questions.value);
     try {
         if (typeof window !== "undefined" && window.api && window.api.saveQuestions) {
@@ -120,20 +118,23 @@ const setupData = async () => {
         }
     }
 
-    setQuestionValues();
+    validateQuestionValues();
     currentTeam.value = teams.value[0];
     gameName.value = questions.value.gameName ? questions.value.gameName : "GAME NAME";
 };
 
-const setQuestionValues = () => {
+const validateQuestionValues = () => {
     questions.value.categories.forEach((category) => {
+        let number = 0;
         category.questions.forEach((question) => {
+            if (!question.number || !Number.isInteger(question.number)) question.number = number;
             if (!question.isAnswered) question.isAnswered = null;
             if (!question.teamAnswered) question.teamAnswered = null;
             question.points = (parseInt(question.number) + 1) * 10;
             question.id = category.name.substring(0, 16) + question.number;
 
             questionsMap.value.set(question.id, question);
+            number++;
         });
     });
 };

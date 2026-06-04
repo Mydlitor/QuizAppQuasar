@@ -58,8 +58,8 @@ const onBackButton = () => {
 }
 
 onMounted(() => {
-    gameStore.setupData()
-    currentTeam.value = gameStore.getCurrentTeam()
+    gameStore.setupData();
+    currentTeam.value = gameStore.getCurrentTeam();
 })
 </script>
 

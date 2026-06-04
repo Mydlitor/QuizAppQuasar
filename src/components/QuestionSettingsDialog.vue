@@ -48,6 +48,15 @@
                                             </q-td>
                                         </q-tr>
                                     </template>
+                                    <template v-slot:bottom-row>
+                                        <q-tr>
+                                            <q-td colspan="100%" style="text-align: center; cursor: pointer;"
+                                                @click="onAddQuestion(props.rowIndex)">
+                                                <q-icon :name="matAddCircle" style="margin-right: 0.5rem;" />
+                                                <span>ADD QUESTION</span>
+                                            </q-td>
+                                        </q-tr>
+                                    </template>
                                 </q-table>
                             </q-td>
                         </q-tr>
@@ -198,6 +207,11 @@ const onQuestionDblClick = (catIndex, qIndex) => {
 
 const onAddCategory = () => {
     questionData.value.categories.push({ name: "NEW CATEGORY", questions: [] })
+}
+
+const onAddQuestion = (catIndex) => {
+    if (catIndex != -1)
+        questionData.value.categories[catIndex].questions.push({ text: "NEW QUESTION" })
 }
 
 const setCategoryPopupRef = (index, el) => {
