@@ -8,7 +8,19 @@
                     <template v-slot:body="props">
                         <q-tr :props="props" @contextmenu.prevent="onRowContextMenu($event, props.rowIndex)">
                             <q-td key="index" :props="props" style="width: 20%;">
-                                {{ props.rowIndex + 1 }}
+                                <div class="index-container">
+                                    {{ props.rowIndex + 1 }}
+                                    <div class="move-buttons-container">
+                                        <q-btn :disable="props.rowIndex <= 0" size="xs"
+                                            @click="onMoveUp(props.rowIndex)">
+                                            <q-icon :name="matKeyboardArrowUp" size="xs" />
+                                        </q-btn>
+                                        <q-btn :disable="props.rowIndex >= teamsData.length - 1" size="xs"
+                                            @click="onMoveDown(props.rowIndex)">
+                                            <q-icon :name="matKeyboardArrowDown" size="xs" />
+                                        </q-btn>
+                                    </div>
+                                </div>
                             </q-td>
                             <q-td key="teamName" :props="props" @dblclick="teamNamePopupRefs[props.rowIndex]?.show()">
                                 {{ props.row.name }}
@@ -58,7 +70,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
-import { matAddCircle } from '@quasar/extras/material-icons'
+import { matAddCircle, matKeyboardArrowDown, matKeyboardArrowUp } from '@quasar/extras/material-icons'
 
 const $q = useQuasar();
 
@@ -91,6 +103,18 @@ const qDialogRef = ref(null)
 
 const teamsError = ref(false)
 const teamsErrorMessage = ref('')
+
+const onMoveUp = (index) => {
+    if (index <= 0)
+        return;
+    [teamsData.value[index - 1], teamsData.value[index]] = [teamsData.value[index], teamsData.value[index - 1]]
+}
+
+const onMoveDown = (index) => {
+    if (index >= teamsData.value.length - 1)
+        return;
+    [teamsData.value[index + 1], teamsData.value[index]] = [teamsData.value[index], teamsData.value[index + 1]]
+}
 
 const validateNewTeam = (val) => {
     if (teamsData.value.some(t => t.name === val)) {
@@ -156,6 +180,13 @@ const props = defineProps({
 
 const emit = defineEmits(['save-changes'])
 
+Array.prototype.swap = function (x, y) {
+    var b = this[x];
+    this[x] = this[y];
+    this[y] = b;
+    return this;
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -171,6 +202,18 @@ const emit = defineEmits(['save-changes'])
 
 .team-data-table {
     width: 100%;
+}
+
+.index-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.move-buttons-container {
+    display: flex;
+    flex-direction: column;
 }
 
 .buttons {

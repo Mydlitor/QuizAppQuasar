@@ -57,6 +57,7 @@ const updateTeamsData = async (newTeamsData) => {
 const updateQuestionsData = async (newQuestionsData) => {
     const plainQuestionsData = cloneData(newQuestionsData);
     questions.value = plainQuestionsData;
+    gameName.value = questions.value.gameName ? questions.value.gameName : gameName.value;
     validateQuestionValues();
     try {
         if (typeof window !== "undefined" && window.api && window.api.saveQuestions) {
@@ -127,7 +128,7 @@ const validateQuestionValues = () => {
     questions.value.categories.forEach((category) => {
         let number = 0;
         category.questions.forEach((question) => {
-            if (!question.number || !Number.isInteger(question.number)) question.number = number;
+            question.number = number;
             if (!question.isAnswered) question.isAnswered = null;
             if (!question.teamAnswered) question.teamAnswered = null;
             question.points = (parseInt(question.number) + 1) * 10;

@@ -24,7 +24,6 @@ import QuestionSettingsDialog from 'src/components/QuestionSettingsDialog.vue';
 const gameStore = useGameStore();
 
 const gameName = computed(() => gameStore.getGameName())
-//const questions = computed(() => gameStore.getQuestions())
 const teams = computed(() => gameStore.getTeams())
 const questions = computed(() => gameStore.getQuestions())
 const isTeamSettingsDialogShown = ref(false)
@@ -55,12 +54,6 @@ const onExit = () => {
     gameStore.quitApp();
 }
 
-//>edit questions
-//>edit teams
-//start game
-// import { useGameStore } from 'src/stores/gameStore';
-
-// const gameStore = useGameStore()
 onBeforeMount(async () => {
     await gameStore.setupData()
 })

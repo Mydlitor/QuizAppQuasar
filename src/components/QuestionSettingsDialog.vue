@@ -2,7 +2,12 @@
     <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow" no-backdrop-dismiss
         no-shake ref="qDialogRef" class="q-dialog">
         <div class="question-settings-main">
-            {{ props.questions.gameName }}
+            <div class="game-name-edit">
+                <span style="font-size: larger;">{{ questionData.gameName }}</span>
+                <q-popup-edit v-model="questionData.gameName" auto-save v-slot="scope">
+                    <q-input v-model="scope.value" dense autofocus borderless @keyup.enter="scope.set" />
+                </q-popup-edit>
+            </div>
             <div class="question-data-table">
                 <q-table class="categories-table" :columns="columns" :rows="questionData.categories" row-key="name"
                     hide-pagination flat bordered separator="cell" :rows-per-page-options="[0]" virtual-scroll>
@@ -10,7 +15,19 @@
                         <q-tr :props="props" @click="onRowClick(props)"
                             @contextmenu.prevent="onCategoryRowContextMenu($event, props.rowIndex)">
                             <q-td key="index" :props="props" style="width: 20%;">
-                                {{ props.rowIndex + 1 }}
+                                <div class="index-container">
+                                    {{ props.rowIndex + 1 }}
+                                    <div class="move-buttons-container">
+                                        <q-btn :disable="props.rowIndex <= 0" size="xs"
+                                            @click.stop="onMoveCategoryUp(props.rowIndex)">
+                                            <q-icon :name="matKeyboardArrowUp" size="xs" />
+                                        </q-btn>
+                                        <q-btn :disable="props.rowIndex >= questionData.categories.length - 1" size="xs"
+                                            @click.stop="onMoveCategoryDown(props.rowIndex)">
+                                            <q-icon :name="matKeyboardArrowDown" size="xs" />
+                                        </q-btn>
+                                    </div>
+                                </div>
                             </q-td>
                             <q-td key="name" :props="props" @dblclick.stop="onCategoryDblClick(props.rowIndex)">
                                 {{ props.row.name }}
@@ -33,7 +50,21 @@
                                         <q-tr :props="questionProps"
                                             @contextmenu.prevent.stop="onQuestionRowContextMenu($event, props.rowIndex, questionProps.rowIndex)">
                                             <q-td key="index" :props="questionProps" style="width: 20%;">
-                                                {{ questionProps.rowIndex + 1 }}
+                                                <div class="index-container">
+                                                    {{ questionProps.rowIndex + 1 }}
+                                                    <div class="move-buttons-container">
+                                                        <q-btn :disable="questionProps.rowIndex <= 0" size="xs"
+                                                            @click.stop="onMoveQuestionUp(props.rowIndex, questionProps.rowIndex)">
+                                                            <q-icon :name="matKeyboardArrowUp" size="xs" />
+                                                        </q-btn>
+                                                        <q-btn
+                                                            :disable="questionProps.rowIndex >= questionProps.length - 1"
+                                                            size="xs"
+                                                            @click.stop="onMoveQuestionDown(props.rowIndex, questionProps.rowIndex)">
+                                                            <q-icon :name="matKeyboardArrowDown" size="xs" />
+                                                        </q-btn>
+                                                    </div>
+                                                </div>
                                             </q-td>
                                             <q-td key="text" :props="questionProps"
                                                 @dblclick.stop="onQuestionDblClick(props.rowIndex, questionProps.rowIndex)">
@@ -99,7 +130,7 @@
 import { ref } from 'vue';
 
 import { useQuasar } from 'quasar';
-import { matAddCircle } from '@quasar/extras/material-icons'
+import { matAddCircle, matKeyboardArrowDown, matKeyboardArrowUp } from '@quasar/extras/material-icons'
 
 const $q = useQuasar();
 
@@ -162,6 +193,32 @@ const onRowClick = (props) => {
         props.expand = !props.expand
         clickTimer.value = null
     }, clickDelay)
+}
+
+const onMoveCategoryUp = (index) => {
+    if (index <= 0)
+        return;
+    [questionData.value.categories[index - 1], questionData.value.categories[index]] = [questionData.value.categories[index], questionData.value.categories[index - 1]]
+}
+
+const onMoveCategoryDown = (index) => {
+    if (index >= questionData.value.categories.length - 1)
+        return;
+    [questionData.value.categories[index + 1], questionData.value.categories[index]] = [questionData.value.categories[index], questionData.value.categories[index + 1]]
+}
+
+const onMoveQuestionUp = (catIndex, index) => {
+    if (index <= 0)
+        return;
+    [questionData.value.categories[catIndex].questions[index - 1], questionData.value.categories[catIndex].questions[index]] =
+        [questionData.value.categories[catIndex].questions[index], questionData.value.categories[catIndex].questions[index - 1]]
+}
+
+const onMoveQuestionDown = (catIndex, index) => {
+    if (index >= questionData.value.categories.length - 1)
+        return;
+    [questionData.value.categories[catIndex].questions[index + 1], questionData.value.categories[catIndex].questions[index]] =
+        [questionData.value.categories[catIndex].questions[index], questionData.value.categories[catIndex].questions[index + 1]]
 }
 
 const onCategoryRowContextMenu = (event, categoryIndex) => {
@@ -277,11 +334,12 @@ const onCancel = () => {
 
 const onGameProgressReset = () => {
     emit('reset-progress')
+    qDialogRef.value.hide()
 }
 
 const onDialogBeforeShow = () => {
-    if (!props.questions || !Array.isArray(props.questions.categories)) {
-        questionData.value = []
+    if (!props.questions) {
+        questionData.value = null
         return
     }
     questionData.value = JSON.parse(JSON.stringify(props.questions))
@@ -316,6 +374,18 @@ const emit = defineEmits(['save-changes', 'reset-progress'])
 
 .categories-table {
     max-height: 60vh;
+}
+
+.index-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.move-buttons-container {
+    display: flex;
+    flex-direction: column;
 }
 
 .buttons {
