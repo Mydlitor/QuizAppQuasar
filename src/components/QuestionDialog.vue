@@ -44,6 +44,7 @@ const teamsOptions = ref([])
 const selectedTeam = ref(null)
 const dialogDivRef = ref(null)
 const qDialogRef = ref(null)
+const timeToCloseWindowInMs = 1500
 
 const onAnsweredCorrectly = () => {
     stopTimer()
@@ -51,7 +52,7 @@ const onAnsweredCorrectly = () => {
     emit('answered-correctly', props.question, selectedTeam.value)
     window.setTimeout(() => {
         qDialogRef.value.hide()
-    }, 3000);
+    }, timeToCloseWindowInMs);
 }
 
 const onAnsweredIncorrectly = () => {

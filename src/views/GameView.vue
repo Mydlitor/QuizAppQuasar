@@ -1,5 +1,8 @@
 <template>
     <q-page class="game-view-main">
+        <div class="back-button-container">
+            <q-btn class="back-button" label="BACK" @click="onBackButton" />
+        </div>
         <div v-if="!questions">
             <p>loading...</p>
         </div>
@@ -18,10 +21,12 @@
 <script setup>
 import { useGameStore } from 'src/stores/gameStore';
 import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import QuestionElement from 'components/QuestionElement.vue';
 import QuestionDialog from 'src/components/QuestionDialog.vue';
 
 const gameStore = useGameStore();
+const router = useRouter();
 
 const questions = computed(() => gameStore.getQuestions())
 const teams = computed(() => gameStore.getTeams())
@@ -45,6 +50,11 @@ const onAnsweredIncorrectly = (question) => {
 
 const onDialogHide = () => {
     gameStore.selectNextTeam()
+}
+
+const onBackButton = () => {
+    gameStore.saveGameStatus();
+    router.push("/");
 }
 
 onMounted(() => {
@@ -72,5 +82,15 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+.back-button-container {
+    position: fixed;
+    left: 1rem;
+    top: 1rem;
+}
+
+.back-button {
+    color: white;
 }
 </style>

@@ -66,6 +66,7 @@
             <div class="buttons">
                 <q-btn label="SAVE" @click="onSave" />
                 <q-btn label="CANCEL" @click="onCancel" />
+                <q-btn label="RESET GAME PROGRESS" @click="onGameProgressReset" />
             </div>
         </div>
         <q-menu ref="categoryContextMenuRef" anchor="top left" self="top left" context-menu auto-close>
@@ -260,6 +261,9 @@ const onCancel = () => {
     qDialogRef.value.hide()
 }
 
+const onGameProgressReset = () => {
+    emit('reset-progress')
+}
 
 const onDialogBeforeShow = () => {
     if (!props.questions || !Array.isArray(props.questions.categories)) {
@@ -277,7 +281,7 @@ const props = defineProps({
     questions: Object
 })
 
-const emit = defineEmits(['save-changes'])
+const emit = defineEmits(['save-changes', 'reset-progress'])
 
 </script>
 

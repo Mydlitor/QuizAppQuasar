@@ -68,6 +68,18 @@ const updateQuestionsData = async (newQuestionsData) => {
     }
 };
 
+const saveGameStatus = async () => {
+    console.log("savegamestatus");
+    const plainQuestionsData = cloneData(questions.value);
+    try {
+        if (typeof window !== "undefined" && window.api && window.api.saveQuestions) {
+            await window.api.saveQuestions(plainQuestionsData);
+        }
+    } catch (err) {
+        console.error("Failed to save game progress to file: ", err);
+    }
+};
+
 const setupData = async () => {
     let savedTeams = null;
     let savedQuestions = null;
@@ -116,14 +128,26 @@ const setupData = async () => {
 const setQuestionValues = () => {
     questions.value.categories.forEach((category) => {
         category.questions.forEach((question) => {
-            question.isAnswered = null;
+            if (!question.isAnswered) question.isAnswered = null;
+            if (!question.teamAnswered) question.teamAnswered = null;
             question.points = (parseInt(question.number) + 1) * 10;
-            question.teamAnswered = null;
             question.id = category.name.substring(0, 16) + question.number;
 
             questionsMap.value.set(question.id, question);
         });
     });
+};
+
+const resetGameProgress = () => {
+    questions.value.categories.forEach((category) => {
+        category.questions.forEach((question) => {
+            question.isAnswered = null;
+            question.teamAnswered = null;
+
+            questionsMap.value.set(question.id, question);
+        });
+    });
+    saveGameStatus();
 };
 
 const quitApp = () => {
@@ -141,7 +165,9 @@ export function useGameStore() {
         setQuestionIncorrect,
         updateTeamsData,
         updateQuestionsData,
+        saveGameStatus,
         setupData,
+        resetGameProgress,
         quitApp,
     };
 }
