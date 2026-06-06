@@ -2,6 +2,7 @@ import { ref, computed, watch } from "vue";
 import questionsJson from "assets/questions.json";
 import teamsJson from "assets/teams.json";
 
+const pointsForThreeInARow = 20;
 const questions = ref([]);
 const questionsMap = ref(new Map());
 const teamsMap = ref(new Map());
@@ -23,7 +24,7 @@ const getGameName = () => gameName.value;
 const getAnswerTime = () => answerTime.value;
 
 watch(remainingQuestions, (newRemainingQuestions) => {
-    if (newRemainingQuestions <= 13) {
+    if (newRemainingQuestions <= 10) {
         calculateTeamScores();
         isGameEnded.value = true;
     }
@@ -213,7 +214,54 @@ const calculateDirectQuestionPoints = () => {
     });
 };
 
-const calculateConnectedQuestionPoints = () => {};
+const calculateConnectedQuestionPoints = () => {
+    let questionsAnswersArray = [];
+    for (let c = 0; c < questions.value.categories.length; c++) {
+        questionsAnswersArray[c] = [];
+        for (let r = 0; r < questions.value.categories[c].questions.length; r++) {
+            questionsAnswersArray[c][r] =
+                questions.value.categories[c].questions[r].teamAnswered?.name;
+        }
+    }
+    calculateConnectedInColumns(questionsAnswersArray);
+    calculateConnectedInRows(questionsAnswersArray);
+};
+
+const calculateConnectedInColumns = (arr) => {
+    for (let c = 0; c < arr.length; c++) {
+        for (let r = 0; r < arr[c].length - 2; r++) {
+            if (
+                arr[c][r] == arr[c][r + 1] &&
+                arr[c][r + 1] == arr[c][r + 2] &&
+                arr[c][r + 2] != null
+            ) {
+                console.log(arr[c][r]);
+                const t = teamsMap.value.get(arr[c][r]);
+                console.log(t);
+                t.points += pointsForThreeInARow;
+            }
+        }
+    }
+};
+
+const calculateConnectedInRows = (arr) => {
+    const rowCount = arr.length > 0 ? arr[0].length : 0;
+
+    for (let r = 0; r < rowCount; r++) {
+        for (let c = 0; c < arr.length - 2; c++) {
+            if (
+                arr[c][r] == arr[c + 1][r] &&
+                arr[c + 1][r] == arr[c + 2][r] &&
+                arr[c + 2][r] != null
+            ) {
+                console.log(arr[c][r]);
+                const t = teamsMap.value.get(arr[c][r]);
+                console.log(t);
+                t.points += pointsForThreeInARow;
+            }
+        }
+    }
+};
 
 const quitApp = () => {
     window.api.quitApp();
