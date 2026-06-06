@@ -195,14 +195,6 @@ const calculateTeamScores = () => {
 
     calculateDirectQuestionPoints();
     calculateConnectedQuestionPoints();
-
-    questionsMap.value.forEach((value) => {
-        console.log(value);
-    });
-
-    teamsMap.value.forEach((value) => {
-        console.log(value);
-    });
 };
 
 const calculateDirectQuestionPoints = () => {
@@ -225,6 +217,7 @@ const calculateConnectedQuestionPoints = () => {
     }
     calculateConnectedInColumns(questionsAnswersArray);
     calculateConnectedInRows(questionsAnswersArray);
+    calculateConnectedInDiagonals(questionsAnswersArray);
 };
 
 const calculateConnectedInColumns = (arr) => {
@@ -235,9 +228,7 @@ const calculateConnectedInColumns = (arr) => {
                 arr[c][r + 1] == arr[c][r + 2] &&
                 arr[c][r + 2] != null
             ) {
-                console.log(arr[c][r]);
                 const t = teamsMap.value.get(arr[c][r]);
-                console.log(t);
                 t.points += pointsForThreeInARow;
             }
         }
@@ -254,9 +245,38 @@ const calculateConnectedInRows = (arr) => {
                 arr[c + 1][r] == arr[c + 2][r] &&
                 arr[c + 2][r] != null
             ) {
-                console.log(arr[c][r]);
                 const t = teamsMap.value.get(arr[c][r]);
-                console.log(t);
+                t.points += pointsForThreeInARow;
+            }
+        }
+    }
+};
+
+const calculateConnectedInDiagonals = (arr) => {
+    const columnCount = arr.length;
+    const rowCount = arr.reduce((max, col) => Math.max(max, col.length), 0);
+
+    for (let c = 0; c < columnCount - 2; c++) {
+        for (let r = 0; r < rowCount - 2; r++) {
+            if (
+                arr[c]?.[r] == arr[c + 1]?.[r + 1] &&
+                arr[c + 1]?.[r + 1] == arr[c + 2]?.[r + 2] &&
+                arr[c + 2]?.[r + 2] != null
+            ) {
+                const t = teamsMap.value.get(arr[c][r]);
+                t.points += pointsForThreeInARow;
+            }
+        }
+    }
+
+    for (let c = 0; c < columnCount - 2; c++) {
+        for (let r = 2; r < rowCount; r++) {
+            if (
+                arr[c]?.[r] == arr[c + 1]?.[r - 1] &&
+                arr[c + 1]?.[r - 1] == arr[c + 2]?.[r - 2] &&
+                arr[c + 2]?.[r - 2] != null
+            ) {
+                const t = teamsMap.value.get(arr[c][r]);
                 t.points += pointsForThreeInARow;
             }
         }
