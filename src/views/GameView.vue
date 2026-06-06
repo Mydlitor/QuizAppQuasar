@@ -13,8 +13,8 @@
             </div>
         </div>
         <QuestionDialog v-model="isDialogShown" :question="currentQuestion" :teams="teams" :current-team="currentTeam"
-            @answered-correctly="onAnsweredCorrectly" @answered-incorrectly="onAnsweredIncorrectly"
-            @hide-dialog="onDialogHide" />
+            :answer-time="answerTime" @answered-correctly="onAnsweredCorrectly"
+            @answered-incorrectly="onAnsweredIncorrectly" @hide-dialog="onDialogHide" />
     </q-page>
 </template>
 
@@ -30,6 +30,7 @@ const router = useRouter();
 
 const questions = computed(() => gameStore.getQuestions())
 const teams = computed(() => gameStore.getTeams())
+const answerTime = computed(() => gameStore.getAnswerTime())
 const isDialogShown = ref(false)
 const currentQuestion = ref(null)
 const currentTeam = ref(null)

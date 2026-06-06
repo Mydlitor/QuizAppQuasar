@@ -7,12 +7,14 @@ const questionsMap = ref(new Map());
 const teams = ref([]);
 const currentTeam = ref(null);
 const gameName = ref(null);
+const answerTime = ref(0);
 
 const getQuestions = () => questions.value;
 const getTeams = () => teams.value;
 const getCurrentTeam = () => currentTeam.value;
 
 const getGameName = () => gameName.value;
+const getAnswerTime = () => answerTime.value;
 
 const selectNextTeam = () => {
     const teamIndex = teams.value.indexOf(currentTeam.value);
@@ -57,7 +59,12 @@ const updateTeamsData = async (newTeamsData) => {
 const updateQuestionsData = async (newQuestionsData) => {
     const plainQuestionsData = cloneData(newQuestionsData);
     questions.value = plainQuestionsData;
-    gameName.value = questions.value.gameName ? questions.value.gameName : gameName.value;
+    gameName.value = questions.value.settings.gameName
+        ? questions.value.settings.gameName
+        : gameName.value;
+    answerTime.value = questions.value.settings.answerTime
+        ? questions.value.settings.answerTime
+        : answerTime.value;
     validateQuestionValues();
     try {
         if (typeof window !== "undefined" && window.api && window.api.saveQuestions) {
@@ -121,7 +128,12 @@ const setupData = async () => {
 
     validateQuestionValues();
     currentTeam.value = teams.value[0];
-    gameName.value = questions.value.gameName ? questions.value.gameName : "GAME NAME";
+    gameName.value = questions.value.settings.gameName
+        ? questions.value.settings.gameName
+        : "GAME NAME";
+    answerTime.value = questions.value.settings.answerTime
+        ? questions.value.settings.answerTime
+        : 30;
 };
 
 const validateQuestionValues = () => {
@@ -162,6 +174,7 @@ export function useGameStore() {
         getTeams,
         getCurrentTeam,
         getGameName,
+        getAnswerTime,
         selectNextTeam,
         setQuestionCorrect,
         setQuestionIncorrect,

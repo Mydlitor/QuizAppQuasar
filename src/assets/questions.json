@@ -1,20 +1,35 @@
 {
-  "gameName": "LOTR Quiz",
+  "settings": {
+    "gameName": "QUIZ_NAME",
+    "answerTime": 15
+  },
   "categories": [
     {
-      "name": "category_name_0",
+      "name": "category_name_01",
       "questions": [
         {
           "number": 0,
-          "text": "0loremipsum0"
+          "text": "0loremipsum0",
+          "isAnswered": null,
+          "points": 10,
+          "teamAnswered": null,
+          "id": "category_name_010"
         },
         {
           "number": 1,
-          "text": "0loremipsum1"
+          "text": "0loremipsum1",
+          "isAnswered": null,
+          "points": 20,
+          "teamAnswered": null,
+          "id": "category_name_011"
         },
         {
           "number": 2,
-          "text": "0loremipsum2"
+          "text": "0loremipsum2",
+          "isAnswered": null,
+          "points": 30,
+          "teamAnswered": null,
+          "id": "category_name_012"
         }
       ]
     },
@@ -23,15 +38,27 @@
       "questions": [
         {
           "number": 0,
-          "text": "1loremipsum0"
+          "text": "1loremipsum0",
+          "isAnswered": null,
+          "points": 10,
+          "teamAnswered": null,
+          "id": "category_name_10"
         },
         {
           "number": 1,
-          "text": "1loremipsum1"
+          "text": "1loremipsum1",
+          "isAnswered": null,
+          "points": 20,
+          "teamAnswered": null,
+          "id": "category_name_11"
         },
         {
           "number": 2,
-          "text": "1loremipsum2"
+          "text": "1loremipsum2",
+          "isAnswered": null,
+          "points": 30,
+          "teamAnswered": null,
+          "id": "category_name_12"
         }
       ]
     },
@@ -40,15 +67,27 @@
       "questions": [
         {
           "number": 0,
-          "text": "2loremipsum0"
+          "text": "2loremipsum0",
+          "isAnswered": null,
+          "points": 10,
+          "teamAnswered": null,
+          "id": "category_name_20"
         },
         {
           "number": 1,
-          "text": "2loremipsum1"
+          "text": "2loremipsum1",
+          "isAnswered": null,
+          "points": 20,
+          "teamAnswered": null,
+          "id": "category_name_21"
         },
         {
           "number": 2,
-          "text": "2loremipsum2"
+          "text": "2loremipsum2",
+          "isAnswered": null,
+          "points": 30,
+          "teamAnswered": null,
+          "id": "category_name_22"
         }
       ]
     },
@@ -57,15 +96,27 @@
       "questions": [
         {
           "number": 0,
-          "text": "3loremipsum0"
+          "text": "3loremipsum0",
+          "isAnswered": null,
+          "points": 10,
+          "teamAnswered": null,
+          "id": "category_name_30"
         },
         {
           "number": 1,
-          "text": "3loremipsum1"
+          "text": "3loremipsum1",
+          "isAnswered": null,
+          "points": 20,
+          "teamAnswered": null,
+          "id": "category_name_31"
         },
         {
           "number": 2,
-          "text": "3loremipsum2"
+          "text": "3loremipsum2",
+          "isAnswered": null,
+          "points": 30,
+          "teamAnswered": null,
+          "id": "category_name_32"
         }
       ]
     },
@@ -74,32 +125,27 @@
       "questions": [
         {
           "number": 0,
-          "text": "4loremipsum0"
+          "text": "4loremipsum0",
+          "isAnswered": null,
+          "points": 10,
+          "teamAnswered": null,
+          "id": "category_name_40"
         },
         {
           "number": 1,
-          "text": "4loremipsum1"
+          "text": "4loremipsum1",
+          "isAnswered": null,
+          "points": 20,
+          "teamAnswered": null,
+          "id": "category_name_41"
         },
         {
+          "text": "4loremipsum2",
           "number": 2,
-          "text": "4loremipsum2"
-        }
-      ]
-    },
-    {
-      "name": "category_name_5",
-      "questions": [
-        {
-          "number": 0,
-          "text": "5loremipsum0"
-        },
-        {
-          "number": 1,
-          "text": "5loremipsum1"
-        },
-        {
-          "number": 2,
-          "text": "5loremipsum2"
+          "isAnswered": null,
+          "teamAnswered": null,
+          "points": 30,
+          "id": "category_name_42"
         }
       ]
     }

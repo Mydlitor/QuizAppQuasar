@@ -31,13 +31,13 @@
 </template>
 
 <script setup>
-import { computed, ref, shallowRef, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useCountdown, onKeyStroke } from '@vueuse/core'
 
-const answerTime = shallowRef(5);
+const answerTimeData = ref(0)
 const isTimerActivated = ref(false)
 const timerLabel = computed(() => { return isTimerActivated.value ? "STOP" : "START" })
-const { remaining, start, stop } = useCountdown(answerTime, {})
+const { remaining, start, stop } = useCountdown(answerTimeData, {})
 const progressRemaining = ref(1.0)
 const isSteal = ref(false);
 const teamsOptions = ref([])
@@ -88,6 +88,8 @@ const onDialogBeforeShow = () => {
     teamsOptions.value = props.teams
     selectedTeam.value = props.currentTeam
     teamsOptions.value = teamsOptions.value.filter(t => t != selectedTeam.value)
+    answerTimeData.value = props.answerTime ? props.answerTime : 30;
+    remaining.value = answerTimeData.value
 }
 
 const onDialogBeforeHide = () => {
@@ -125,7 +127,10 @@ onKeyStroke(' ', e => {
 }, { dedupe: true })
 
 watch(remaining, (newRemaining) => {
-    progressRemaining.value = newRemaining / answerTime.value;
+    if (newRemaining === answerTimeData.value)
+        progressRemaining.value = 1.0;
+    else
+        progressRemaining.value = Number.parseFloat(((newRemaining - 1) / answerTimeData.value).toPrecision(3));
     if (newRemaining === 0) {
         animateBorder("white")
         stopTimer();
@@ -135,6 +140,7 @@ watch(remaining, (newRemaining) => {
 
 const props = defineProps({
     question: Object,
+    answerTime: Number,
     teams: Array,
     currentTeam: Object,
 });

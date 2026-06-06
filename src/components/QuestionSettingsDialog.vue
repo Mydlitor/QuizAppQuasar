@@ -2,11 +2,24 @@
     <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow" no-backdrop-dismiss
         no-shake ref="qDialogRef" class="q-dialog">
         <div class="question-settings-main">
-            <div class="game-name-edit">
-                <span style="font-size: larger;">{{ questionData.gameName }}</span>
-                <q-popup-edit v-model="questionData.gameName" auto-save v-slot="scope">
-                    <q-input v-model="scope.value" dense autofocus borderless @keyup.enter="scope.set" />
-                </q-popup-edit>
+            <div class="game-global-settings">
+                <div class="title-settings">
+                    <span style="font-size: larger; margin-right: 0.5rem;">Title: </span>
+                    <span style="font-size: larger;">{{ questionData.settings.gameName }}</span>
+                    <q-popup-edit v-model="questionData.settings.gameName" auto-save v-slot="scope">
+                        <q-input v-model="scope.value" dense autofocus borderless @keyup.enter="scope.set" />
+                    </q-popup-edit>
+                </div>
+                <div class="answer-time-settings">
+                    <span style="font-size: larger; margin-right: 0.5rem;">Answer time [s]: </span>
+                    <span style="font-size: larger;">{{ questionData.settings.answerTime }}</span>
+                    <q-popup-edit v-model="questionData.settings.answerTime" auto-save v-slot="scope">
+                        <q-input v-model.number="scope.value" type="number" dense autofocus borderless
+                            @keyup.enter="scope.set" />
+                    </q-popup-edit>
+                </div>
+
+
             </div>
             <div class="question-data-table">
                 <q-table class="categories-table" :columns="columns" :rows="questionData.categories" row-key="name"
@@ -58,7 +71,7 @@
                                                             <q-icon :name="matKeyboardArrowUp" size="xs" />
                                                         </q-btn>
                                                         <q-btn
-                                                            :disable="questionProps.rowIndex >= questionProps.length - 1"
+                                                            :disable="questionProps.rowIndex >= questionData.categories[questionProps.rowIndex].questions.length"
                                                             size="xs"
                                                             @click.stop="onMoveQuestionDown(props.rowIndex, questionProps.rowIndex)">
                                                             <q-icon :name="matKeyboardArrowDown" size="xs" />
@@ -366,6 +379,13 @@ const emit = defineEmits(['save-changes', 'reset-progress'])
     padding: 2rem 3rem;
     background-color: $dark;
     gap: 2rem;
+}
+
+.game-global-settings {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 80%;
 }
 
 .question-data-table {

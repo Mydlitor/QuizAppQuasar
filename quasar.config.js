@@ -172,7 +172,7 @@ export default defineConfig((/* ctx */) => {
             // specify the debugging port to use for the Electron app when running in development mode
             inspectPort: 5858,
 
-            bundler: "packager", // 'packager' or 'builder'
+            bundler: "builder", // 'packager' or 'builder'
 
             packager: {
                 // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -188,7 +188,19 @@ export default defineConfig((/* ctx */) => {
             builder: {
                 // https://www.electron.build/configuration
 
-                appId: "quiz-app-quasar",
+                appId: "com.mydlitor.quizapp",
+                productName: "Quiz App",
+
+                win: {
+                    target: "nsis",
+                },
+
+                nsis: {
+                    oneClick: false,
+                    allowElevation: true,
+                    allowToChangeInstallationDirectory: true,
+                    createDesktopShortcut: true,
+                },
             },
         },
 
