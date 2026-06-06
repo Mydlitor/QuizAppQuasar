@@ -24,10 +24,10 @@ const getGameName = () => gameName.value;
 const getAnswerTime = () => answerTime.value;
 
 watch(remainingQuestions, (newRemainingQuestions) => {
-    if (newRemainingQuestions <= 10) {
+    if (newRemainingQuestions <= 0) {
         calculateTeamScores();
         isGameEnded.value = true;
-    }
+    } else isGameEnded.value = false;
 });
 
 const selectNextTeam = () => {
@@ -152,6 +152,9 @@ const setupData = async () => {
     answerTime.value = questions.value.settings.answerTime
         ? questions.value.settings.answerTime
         : 30;
+
+    console.log("gs", remainingQuestions.value);
+    console.log("gs", isGameEnded.value);
 };
 
 const validateQuestionValues = () => {

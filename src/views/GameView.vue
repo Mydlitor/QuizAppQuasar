@@ -4,7 +4,7 @@
             <q-btn class="back-button" label="BACK" @click="onBackButton" />
         </div>
         <div v-if="!questions">
-            <p>loading...</p>
+            <p>NO QUESTIONS</p>
         </div>
         <div v-else class="questions-container">
             <div class="category-column" v-for="category in questions.categories" v-bind:key="category.name">
@@ -13,6 +13,8 @@
                     :question="question" @click="showQuestionDialog(question)" />
             </div>
         </div>
+        <q-btn v-show="isGameResultEnded" label="SHOW RESULTS" @click="isGameResultDialogShown = true" />
+
         <QuestionDialog v-model="isQuestionDialogShown" :question="currentQuestion" :teams="teams"
             :current-team="currentTeam" :answer-time="answerTime" @answered-correctly="onAnsweredCorrectly"
             @answered-incorrectly="onAnsweredIncorrectly" @hide-dialog="onDialogHide" />
@@ -35,7 +37,8 @@ const questions = computed(() => gameStore.getQuestions())
 const teams = computed(() => gameStore.getTeams())
 const answerTime = computed(() => gameStore.getAnswerTime())
 const isQuestionDialogShown = ref(false)
-const isGameResultDialogShown = ref(false)
+const isGameResultEnded = computed(() => gameStore.getGameEndedStatus())
+const isGameResultDialogShown = ref(false);
 const currentQuestion = ref(null)
 const currentTeam = ref(null)
 
@@ -65,6 +68,7 @@ const onBackButton = () => {
 onMounted(() => {
     gameStore.setupData();
     currentTeam.value = gameStore.getCurrentTeam();
+    console.log(isGameResultEnded.value)
 })
 </script>
 
@@ -82,6 +86,7 @@ onMounted(() => {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+    margin-bottom: 1rem;
 }
 
 .category-column {
