@@ -8,6 +8,7 @@
         </div>
         <div v-else class="questions-container">
             <div class="category-column" v-for="category in questions.categories" v-bind:key="category.name">
+                <span style="font-size: large;">{{ category.name }}</span>
                 <QuestionElement v-for="question in category.questions" v-bind:key="question.number"
                     :question="question" @click="showQuestionDialog(question)" />
             </div>
@@ -73,6 +74,7 @@ onMounted(() => {
 }
 
 .questions-container {
+    margin-top: 1rem;
     width: 80%;
     display: flex;
     flex-direction: row;
@@ -83,6 +85,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    align-items: center;
 }
 
 .back-button-container {
