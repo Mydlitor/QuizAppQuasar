@@ -13,9 +13,10 @@
                     :question="question" @click="showQuestionDialog(question)" />
             </div>
         </div>
-        <QuestionDialog v-model="isDialogShown" :question="currentQuestion" :teams="teams" :current-team="currentTeam"
-            :answer-time="answerTime" @answered-correctly="onAnsweredCorrectly"
+        <QuestionDialog v-model="isQuestionDialogShown" :question="currentQuestion" :teams="teams"
+            :current-team="currentTeam" :answer-time="answerTime" @answered-correctly="onAnsweredCorrectly"
             @answered-incorrectly="onAnsweredIncorrectly" @hide-dialog="onDialogHide" />
+        <GameResultDialog v-model="isGameResultDialogShown" :teams="teams" />
     </q-page>
 </template>
 
@@ -25,6 +26,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import QuestionElement from 'components/QuestionElement.vue';
 import QuestionDialog from 'src/components/QuestionDialog.vue';
+import GameResultDialog from 'src/components/GameResultDialog.vue';
 
 const gameStore = useGameStore();
 const router = useRouter();
@@ -32,14 +34,15 @@ const router = useRouter();
 const questions = computed(() => gameStore.getQuestions())
 const teams = computed(() => gameStore.getTeams())
 const answerTime = computed(() => gameStore.getAnswerTime())
-const isDialogShown = ref(false)
+const isQuestionDialogShown = ref(false)
+const isGameResultDialogShown = ref(false)
 const currentQuestion = ref(null)
 const currentTeam = ref(null)
 
 const showQuestionDialog = (question) => {
     currentQuestion.value = question;
     currentTeam.value = gameStore.getCurrentTeam()
-    isDialogShown.value = true;
+    isQuestionDialogShown.value = true;
 }
 
 const onAnsweredCorrectly = (question, team) => {

@@ -1,7 +1,7 @@
 <template>
     <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow" no-backdrop-dismiss
         no-shake ref="qDialogRef" class="q-dialog">
-        <div class="question-settings-main">
+        <div class="dialog-main">
             <div class="game-global-settings">
                 <div class="title-settings">
                     <span style="font-size: larger; margin-right: 0.5rem;">Title: </span>
@@ -371,7 +371,7 @@ const emit = defineEmits(['save-changes', 'reset-progress'])
 </script>
 
 <style scoped lang="scss">
-.question-settings-main {
+.dialog-main {
     display: flex;
     flex-direction: column;
     align-items: center;

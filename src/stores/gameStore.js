@@ -1,20 +1,33 @@
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import questionsJson from "assets/questions.json";
 import teamsJson from "assets/teams.json";
 
 const questions = ref([]);
 const questionsMap = ref(new Map());
+const teamsMap = ref(new Map());
 const teams = ref([]);
 const currentTeam = ref(null);
 const gameName = ref(null);
 const answerTime = ref(0);
+const isGameEnded = ref(false);
+const remainingQuestions = computed(() => {
+    return [...questionsMap.value.values()].filter((q) => q.isAnswered == null).length;
+});
 
 const getQuestions = () => questions.value;
 const getTeams = () => teams.value;
 const getCurrentTeam = () => currentTeam.value;
+const getGameEndedStatus = () => isGameEnded.value;
 
 const getGameName = () => gameName.value;
 const getAnswerTime = () => answerTime.value;
+
+watch(remainingQuestions, (newRemainingQuestions) => {
+    if (newRemainingQuestions <= 13) {
+        calculateTeamScores();
+        isGameEnded.value = true;
+    }
+});
 
 const selectNextTeam = () => {
     const teamIndex = teams.value.indexOf(currentTeam.value);
@@ -31,6 +44,8 @@ const setQuestionCorrect = (question, team) => {
     }
     q.isAnswered = true;
     q.teamAnswered = team;
+
+    console.log(remainingQuestions.value);
 };
 
 const setQuestionIncorrect = (question) => {
@@ -47,6 +62,7 @@ const cloneData = (data) => JSON.parse(JSON.stringify(data));
 const updateTeamsData = async (newTeamsData) => {
     const plainTeamsData = cloneData(newTeamsData);
     teams.value = plainTeamsData;
+    validateTeamsValues();
     try {
         if (typeof window !== "undefined" && window.api && window.api.saveTeams) {
             await window.api.saveTeams(plainTeamsData);
@@ -127,6 +143,7 @@ const setupData = async () => {
     }
 
     validateQuestionValues();
+    validateTeamsValues();
     currentTeam.value = teams.value[0];
     gameName.value = questions.value.settings.gameName
         ? questions.value.settings.gameName
@@ -152,6 +169,12 @@ const validateQuestionValues = () => {
     });
 };
 
+const validateTeamsValues = () => {
+    teams.value.forEach((team) => {
+        teamsMap.value.set(team.name, team);
+    });
+};
+
 const resetGameProgress = () => {
     questions.value.categories.forEach((category) => {
         category.questions.forEach((question) => {
@@ -163,6 +186,34 @@ const resetGameProgress = () => {
     });
     saveGameStatus();
 };
+
+const calculateTeamScores = () => {
+    teams.value.forEach((team) => {
+        team.points = 0;
+    });
+
+    calculateDirectQuestionPoints();
+    calculateConnectedQuestionPoints();
+
+    questionsMap.value.forEach((value) => {
+        console.log(value);
+    });
+
+    teamsMap.value.forEach((value) => {
+        console.log(value);
+    });
+};
+
+const calculateDirectQuestionPoints = () => {
+    questionsMap.value.forEach((value) => {
+        if (value.teamAnswered) {
+            const t = teamsMap.value.get(value.teamAnswered.name);
+            t.points += value.points;
+        }
+    });
+};
+
+const calculateConnectedQuestionPoints = () => {};
 
 const quitApp = () => {
     window.api.quitApp();
@@ -183,6 +234,7 @@ export function useGameStore() {
         saveGameStatus,
         setupData,
         resetGameProgress,
+        getGameEndedStatus,
         quitApp,
     };
 }
