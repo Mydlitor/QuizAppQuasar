@@ -66,5 +66,5 @@ Once all the questions have been answered, you can click the SHOW RESULTS button
 # Known issues
 
 - When using node ^26, electron tends to break on the building step.
-
 - Windows defender often removes electron.exe file, try disabling it or adding folder as an exception.
+- Sometimes game progress doesn't automatically save when clicking the BACK button.
