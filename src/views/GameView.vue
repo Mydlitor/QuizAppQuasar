@@ -3,12 +3,14 @@
         <div class="back-button-container">
             <q-btn class="back-button" label="BACK" @click="onBackButton" />
         </div>
+
         <div v-if="!questions">
             <p>NO QUESTIONS</p>
         </div>
-        <div v-else class="questions-container">
+        <div class="questions-container">
             <div class="category-column" v-for="category in questions.categories" v-bind:key="category.name">
-                <span style="font-size: large;">{{ category.name }}</span>
+                <p class="category-name" style="font-size: large; word-break: break-word; height: 3rem;">
+                    {{ category.name }}</p>
                 <QuestionElement v-for="question in category.questions" v-bind:key="question.number"
                     :question="question" @click="showQuestionDialog(question)" />
             </div>
@@ -19,6 +21,7 @@
             :current-team="currentTeam" :answer-time="answerTime" @answered-correctly="onAnsweredCorrectly"
             @answered-incorrectly="onAnsweredIncorrectly" @hide-dialog="onDialogHide" />
         <GameResultDialog v-model="isGameResultDialogShown" :teams="teams" />
+
     </q-page>
 </template>
 
@@ -70,6 +73,7 @@ onMounted(() => {
     currentTeam.value = gameStore.getCurrentTeam();
     console.log(isGameResultEnded.value)
 })
+
 </script>
 
 <style scoped>
@@ -85,8 +89,9 @@ onMounted(() => {
     width: 80%;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
     margin-bottom: 1rem;
+    justify-content: center;
+    gap: 1rem;
 }
 
 .category-column {
@@ -94,6 +99,7 @@ onMounted(() => {
     flex-direction: column;
     gap: 1rem;
     align-items: center;
+    width: min-content;
 }
 
 .back-button-container {
