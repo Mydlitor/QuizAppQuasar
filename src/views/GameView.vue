@@ -27,7 +27,7 @@
 
 <script setup>
 import { useGameStore } from 'src/stores/gameStore';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import QuestionElement from 'components/QuestionElement.vue';
 import QuestionDialog from 'src/components/QuestionDialog.vue';
@@ -59,9 +59,16 @@ const onAnsweredIncorrectly = (question) => {
     gameStore.setQuestionIncorrect(question)
 }
 
-const onDialogHide = () => {
-    gameStore.selectNextTeam()
-}
+watch((currentQuestion), (oldQuestion, newQuestion) => {
+    if (oldQuestion == null)
+        return;
+    if (oldQuestion != newQuestion)
+        gameStore.selectNextTeam()
+})
+
+// const onDialogHide = () => {
+//     gameStore.selectNextTeam()
+// }
 
 const onBackButton = () => {
     gameStore.saveGameStatus();
