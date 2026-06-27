@@ -114,7 +114,36 @@
                                     :src="'/avatars/' + props.row.avatar"
                                     style="height: 3rem; width: 3rem"
                                 />
-                                <!-- <q-dialog -->
+                                <q-menu
+                                    no-parent-event
+                                    anchor="bottom middle"
+                                    self="top middle"
+                                    :ref="
+                                        (el) => {
+                                            teamAvatarPopupRefs[props.rowIndex] = el;
+                                        }
+                                    "
+                                >
+                                    <q-card>
+                                        <div class="avatar-selector">
+                                            <q-avatar
+                                                v-for="i in avatarsNo"
+                                                :key="i"
+                                                square
+                                                size="5rem"
+                                                @click="
+                                                    onAvatarSelect(props.row, i - 1, props.rowIndex)
+                                                "
+                                            >
+                                                <q-img
+                                                    class="avatar-selector-item"
+                                                    :src="'/avatars/avatar' + (i - 1) + '.png'"
+                                                    fit="fill"
+                                                />
+                                            </q-avatar>
+                                        </div>
+                                    </q-card>
+                                </q-menu>
                             </q-td>
                         </q-tr>
                     </template>
@@ -158,6 +187,7 @@ import {
 
 const $q = useQuasar();
 
+const avatarsNo = 10;
 const teamsData = ref([]);
 const selectedContextTeamIndex = ref(-1);
 const teamContextMenuRef = ref(null);
@@ -223,7 +253,12 @@ const validateNewTeam = (val) => {
 const validateAllTeams = () => {
     let nameSet = new Set(teamsData.value.map((t) => t.name));
     let colorSet = new Set(teamsData.value.map((t) => t.color));
-    if (nameSet.size != teamsData.value.length || colorSet.size != teamsData.value.length) {
+    let avatarSet = new Set(teamsData.value.map((t) => t.avatar));
+    if (
+        nameSet.size != teamsData.value.length ||
+        colorSet.size != teamsData.value.length ||
+        avatarSet.size != teamsData.value.length
+    ) {
         return false;
     }
     return true;
@@ -232,6 +267,11 @@ const validateAllTeams = () => {
 const onRowContextMenu = (event, teamIndex) => {
     selectedContextTeamIndex.value = teamIndex;
     teamContextMenuRef.value?.show(event);
+};
+
+const onAvatarSelect = (row, avatarIndex, rowIndex) => {
+    row.avatar = "avatar" + avatarIndex + ".png";
+    teamAvatarPopupRefs.value[rowIndex]?.hide();
 };
 
 const onRemoveTeam = () => {
@@ -245,7 +285,7 @@ const onAddTeam = () => {
 const onSave = () => {
     if (validateAllTeams() === false) {
         $q.notify({
-            message: "EACH TEAM MUST HAVE UNIQUE NAME AND COLOR",
+            message: "EACH TEAM MUST HAVE UNIQUE NAME, COLOR AND AVATAR",
         });
         return;
     }
@@ -312,5 +352,18 @@ Array.prototype.swap = function (x, y) {
     display: flex;
     flex-direction: row;
     gap: 2rem;
+}
+
+.avatar-selector {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 0.5rem;
+    gap: 0.5rem;
+}
+
+.avatar-selector-item {
+    width: 100%;
+    aspect-ratio: 1;
+    cursor: pointer;
 }
 </style>
