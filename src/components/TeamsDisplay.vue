@@ -1,13 +1,14 @@
 <template>
     <div class="teams-display-main">
-        <q-card
+        <q-avatar
             class="team-card"
+            rounded
             v-for="team in props.teams"
             :key="team.name"
-            :style="{ borderColor: team.name === currentTeam?.name ? 'white' : 'transparent' }"
+            :style="{ outline: team.name === currentTeam?.name ? '3px solid white' : 'none' }"
         >
-            <q-img :src="'/avatars/' + team.avatar" fit="cover" style="height: 100%" />
-        </q-card>
+            <q-img :src="'/avatars/' + team.avatar" style="height: 100%" />
+        </q-avatar>
     </div>
 </template>
 
@@ -38,6 +39,6 @@ const props = defineProps({
     height: 5rem;
     padding: 0 !important;
     margin: 0 !important;
-    border: 3px solid transparent;
+    outline-offset: 3px;
 }
 </style>

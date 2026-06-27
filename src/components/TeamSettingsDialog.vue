@@ -1,51 +1,131 @@
 <template>
-    <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow" no-backdrop-dismiss
-        no-shake ref="qDialogRef" class="q-dialog">
+    <q-dialog
+        full-width
+        @before-hide="onDialogBeforeHide"
+        @before-show="onDialogBeforeShow"
+        no-backdrop-dismiss
+        no-shake
+        ref="qDialogRef"
+        class="q-dialog"
+    >
         <div class="team-settings-main">
             <div class="team-data-table">
-                <q-table :columns="columns" :rows="teamsData" row-key="name" hide-pagination flat bordered
-                    separator="cell" :rows-per-page-options="[0]">
+                <q-table
+                    :columns="columns"
+                    :rows="teamsData"
+                    row-key="name"
+                    hide-pagination
+                    flat
+                    bordered
+                    separator="cell"
+                    :rows-per-page-options="[0]"
+                >
                     <template v-slot:body="props">
-                        <q-tr :props="props" @contextmenu.prevent="onRowContextMenu($event, props.rowIndex)">
-                            <q-td key="index" :props="props" style="width: 20%;">
+                        <q-tr
+                            :props="props"
+                            @contextmenu.prevent="onRowContextMenu($event, props.rowIndex)"
+                        >
+                            <q-td key="index" :props="props" style="width: 20%">
                                 <div class="index-container">
                                     {{ props.rowIndex + 1 }}
                                     <div class="move-buttons-container">
-                                        <q-btn :disable="props.rowIndex <= 0" size="xs"
-                                            @click="onMoveUp(props.rowIndex)">
+                                        <q-btn
+                                            :disable="props.rowIndex <= 0"
+                                            size="xs"
+                                            @click="onMoveUp(props.rowIndex)"
+                                        >
                                             <q-icon :name="matKeyboardArrowUp" size="xs" />
                                         </q-btn>
-                                        <q-btn :disable="props.rowIndex >= teamsData.length - 1" size="xs"
-                                            @click="onMoveDown(props.rowIndex)">
+                                        <q-btn
+                                            :disable="props.rowIndex >= teamsData.length - 1"
+                                            size="xs"
+                                            @click="onMoveDown(props.rowIndex)"
+                                        >
                                             <q-icon :name="matKeyboardArrowDown" size="xs" />
                                         </q-btn>
                                     </div>
                                 </div>
                             </q-td>
-                            <q-td key="teamName" :props="props" @dblclick="teamNamePopupRefs[props.rowIndex]?.show()">
+                            <q-td
+                                key="teamName"
+                                :props="props"
+                                @dblclick="teamNamePopupRefs[props.rowIndex]?.show()"
+                            >
                                 {{ props.row.name }}
-                                <q-popup-edit v-model="props.row.name" auto-save v-slot="scope" no-parent-event
-                                    :validate="validateNewTeam" :ref="el => { teamNamePopupRefs[props.rowIndex] = el }">
-                                    <q-input v-model="scope.value" dense autofocus borderless :error="teamsError"
-                                        :error-message="teamsErrorMessage" @keyup.enter="scope.set" />
+                                <q-popup-edit
+                                    v-model="props.row.name"
+                                    auto-save
+                                    v-slot="scope"
+                                    no-parent-event
+                                    :validate="validateNewTeam"
+                                    :ref="
+                                        (el) => {
+                                            teamNamePopupRefs[props.rowIndex] = el;
+                                        }
+                                    "
+                                >
+                                    <q-input
+                                        v-model="scope.value"
+                                        dense
+                                        autofocus
+                                        borderless
+                                        :error="teamsError"
+                                        :error-message="teamsErrorMessage"
+                                        @keyup.enter="scope.set"
+                                    />
                                 </q-popup-edit>
                             </q-td>
-                            <q-td key="color" :props="props" style="width: 20%;" :style="{ 'color': props.row.color }"
-                                @dblclick="teamColorPopupRefs[props.rowIndex]?.show()">
+                            <q-td
+                                key="color"
+                                :props="props"
+                                style="width: 20%"
+                                :style="{ color: props.row.color }"
+                                @dblclick="teamColorPopupRefs[props.rowIndex]?.show()"
+                            >
                                 {{ props.row.color }}
-                                <q-popup-edit v-model="props.row.color" buttons v-slot="scope" no-parent-event
-                                    :ref="el => { teamColorPopupRefs[props.rowIndex] = el }">
-                                    <q-color v-model="scope.value" no-header no-footer default-view="palette"
-                                        class="my-picker" format-model="hex" />
-
+                                <q-popup-edit
+                                    v-model="props.row.color"
+                                    buttons
+                                    v-slot="scope"
+                                    no-parent-event
+                                    :ref="
+                                        (el) => {
+                                            teamColorPopupRefs[props.rowIndex] = el;
+                                        }
+                                    "
+                                >
+                                    <q-color
+                                        v-model="scope.value"
+                                        no-header
+                                        no-footer
+                                        default-view="palette"
+                                        class="my-picker"
+                                        format-model="hex"
+                                    />
                                 </q-popup-edit>
+                            </q-td>
+                            <q-td
+                                key="avatar"
+                                :props="props"
+                                style="width: 20%"
+                                @dblclick="teamAvatarPopupRefs[props.rowIndex]?.show()"
+                            >
+                                <q-img
+                                    :src="'/avatars/' + props.row.avatar"
+                                    style="height: 3rem; width: 3rem"
+                                />
+                                <!-- <q-dialog -->
                             </q-td>
                         </q-tr>
                     </template>
                     <template v-slot:bottom-row>
                         <q-tr>
-                            <q-td colspan="100%" style="text-align: center; cursor: pointer;" @click="onAddTeam">
-                                <q-icon :name="matAddCircle" style="margin-right: 0.5rem;" />
+                            <q-td
+                                colspan="100%"
+                                style="text-align: center; cursor: pointer"
+                                @click="onAddTeam"
+                            >
+                                <q-icon :name="matAddCircle" style="margin-right: 0.5rem" />
                                 <span>ADD TEAM</span>
                             </q-td>
                         </q-tr>
@@ -68,125 +148,137 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useQuasar } from 'quasar';
-import { matAddCircle, matKeyboardArrowDown, matKeyboardArrowUp } from '@quasar/extras/material-icons'
+import { ref } from "vue";
+import { useQuasar } from "quasar";
+import {
+    matAddCircle,
+    matKeyboardArrowDown,
+    matKeyboardArrowUp,
+} from "@quasar/extras/material-icons";
 
 const $q = useQuasar();
 
-const teamsData = ref([])
-const selectedContextTeamIndex = ref(-1)
-const teamContextMenuRef = ref(null)
-const teamNamePopupRefs = ref([])
-const teamColorPopupRefs = ref([])
+const teamsData = ref([]);
+const selectedContextTeamIndex = ref(-1);
+const teamContextMenuRef = ref(null);
+const teamNamePopupRefs = ref([]);
+const teamColorPopupRefs = ref([]);
+const teamAvatarPopupRefs = ref([]);
 const columns = [
     {
-        name: 'index',
-        align: 'center',
-        label: 'No.',
-        field: 'index'
+        name: "index",
+        align: "center",
+        label: "No.",
+        field: "index",
     },
     {
-        name: 'teamName',
-        align: 'center',
-        label: 'Team name',
-        field: 'name'
+        name: "teamName",
+        align: "center",
+        label: "Team name",
+        field: "name",
     },
     {
-        name: 'color',
-        align: 'center',
-        label: 'Color',
-        field: 'color'
-    }
-]
-const qDialogRef = ref(null)
+        name: "color",
+        align: "center",
+        label: "Color",
+        field: "color",
+    },
+    {
+        name: "avatar",
+        align: "center",
+        label: "Avatar",
+        field: "avatar",
+    },
+];
+const qDialogRef = ref(null);
 
-const teamsError = ref(false)
-const teamsErrorMessage = ref('')
+const teamsError = ref(false);
+const teamsErrorMessage = ref("");
 
 const onMoveUp = (index) => {
-    if (index <= 0)
-        return;
-    [teamsData.value[index - 1], teamsData.value[index]] = [teamsData.value[index], teamsData.value[index - 1]]
-}
+    if (index <= 0) return;
+    [teamsData.value[index - 1], teamsData.value[index]] = [
+        teamsData.value[index],
+        teamsData.value[index - 1],
+    ];
+};
 
 const onMoveDown = (index) => {
-    if (index >= teamsData.value.length - 1)
-        return;
-    [teamsData.value[index + 1], teamsData.value[index]] = [teamsData.value[index], teamsData.value[index + 1]]
-}
+    if (index >= teamsData.value.length - 1) return;
+    [teamsData.value[index + 1], teamsData.value[index]] = [
+        teamsData.value[index],
+        teamsData.value[index + 1],
+    ];
+};
 
 const validateNewTeam = (val) => {
-    if (teamsData.value.some(t => t.name === val)) {
+    if (teamsData.value.some((t) => t.name === val)) {
         teamsError.value = true;
-        teamsErrorMessage.value = "EACH TEAM MUST HAVE UNIQUE NAME"
+        teamsErrorMessage.value = "EACH TEAM MUST HAVE UNIQUE NAME";
         return false;
     }
     return true;
-}
+};
 
 const validateAllTeams = () => {
-    let nameSet = new Set(teamsData.value.map(t => t.name))
-    let colorSet = new Set(teamsData.value.map(t => t.color))
+    let nameSet = new Set(teamsData.value.map((t) => t.name));
+    let colorSet = new Set(teamsData.value.map((t) => t.color));
     if (nameSet.size != teamsData.value.length || colorSet.size != teamsData.value.length) {
         return false;
     }
     return true;
-}
+};
 
 const onRowContextMenu = (event, teamIndex) => {
     selectedContextTeamIndex.value = teamIndex;
-    teamContextMenuRef.value?.show(event)
-}
+    teamContextMenuRef.value?.show(event);
+};
 
 const onRemoveTeam = () => {
     teamsData.value.splice(selectedContextTeamIndex.value, 1);
-}
+};
 
 const onAddTeam = () => {
-    teamsData.value.push({ name: "NEW TEAM", color: "white" })
-}
+    teamsData.value.push({ name: "NEW TEAM", color: "white" });
+};
 
 const onSave = () => {
     if (validateAllTeams() === false) {
         $q.notify({
-            message: "EACH TEAM MUST HAVE UNIQUE NAME AND COLOR"
-        })
+            message: "EACH TEAM MUST HAVE UNIQUE NAME AND COLOR",
+        });
         return;
     }
-    emit('save-changes', teamsData.value)
-    qDialogRef.value.hide()
-}
+    emit("save-changes", teamsData.value);
+    qDialogRef.value.hide();
+};
 
 const onCancel = () => {
-    qDialogRef.value.hide()
-}
+    qDialogRef.value.hide();
+};
 
 const onDialogBeforeShow = () => {
     if (!props.teams) {
-        teamsData.value = []
-        return
+        teamsData.value = [];
+        return;
     }
-    teamsData.value = props.teams.map(t => ({ name: t.name, color: t.color }))
-}
+    teamsData.value = props.teams.map((t) => ({ name: t.name, color: t.color, avatar: t.avatar }));
+};
 
-const onDialogBeforeHide = () => {
-
-}
+const onDialogBeforeHide = () => {};
 
 const props = defineProps({
-    teams: Array
-})
+    teams: Array,
+});
 
-const emit = defineEmits(['save-changes'])
+const emit = defineEmits(["save-changes"]);
 
 Array.prototype.swap = function (x, y) {
     var b = this[x];
     this[x] = this[y];
     this[y] = b;
     return this;
-}
-
+};
 </script>
 
 <style scoped lang="scss">
