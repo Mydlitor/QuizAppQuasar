@@ -27,7 +27,7 @@
                 />
             </div>
         </div>
-        <span>{{ currentTeam }}</span>
+        <TeamsDisplay class="teams-display" :teams="teams" :current-team="currentTeam" />
         <q-btn
             v-show="isGameResultEnded"
             label="SHOW RESULTS"
@@ -50,11 +50,12 @@
 
 <script setup>
 import { useGameStore } from "src/stores/gameStore";
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 import { useRouter } from "vue-router";
 import QuestionElement from "components/QuestionElement.vue";
 import QuestionDialog from "src/components/QuestionDialog.vue";
 import GameResultDialog from "src/components/GameResultDialog.vue";
+import TeamsDisplay from "components/TeamsDisplay.vue";
 
 const gameStore = useGameStore();
 const router = useRouter();
@@ -67,26 +68,22 @@ const isGameResultEnded = computed(() => gameStore.getGameEndedStatus());
 const isGameResultDialogShown = ref(false);
 const currentQuestion = ref(null);
 const currentTeam = ref(null);
-const answered = ref(false);
-
 const showQuestionDialog = (question) => {
-    if (currentQuestion.value != null && answered.value) {
-        gameStore.selectNextTeam();
-    }
     currentQuestion.value = question;
     currentTeam.value = gameStore.getCurrentTeam();
     isQuestionDialogShown.value = true;
-    answered.value = false;
 };
 
 const onAnsweredCorrectly = (question, team) => {
     gameStore.setQuestionCorrect(question, team);
-    answered.value = true;
+    gameStore.selectNextTeam();
+    currentTeam.value = gameStore.getCurrentTeam();
 };
 
 const onAnsweredIncorrectly = (question) => {
     gameStore.setQuestionIncorrect(question);
-    answered.value = true;
+    gameStore.selectNextTeam();
+    currentTeam.value = gameStore.getCurrentTeam();
 };
 
 const onBackButton = () => {
@@ -94,9 +91,10 @@ const onBackButton = () => {
     router.push("/");
 };
 
-onMounted(() => {
+onBeforeMount(() => {
     gameStore.setupData();
     currentTeam.value = gameStore.getCurrentTeam();
+    console.log(currentTeam.value);
     console.log(isGameResultEnded.value);
 });
 </script>
@@ -135,5 +133,12 @@ onMounted(() => {
 
 .back-button {
     color: white;
+}
+
+.teams-display {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    width: min-content;
 }
 </style>

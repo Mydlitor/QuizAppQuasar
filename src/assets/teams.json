@@ -2,19 +2,23 @@
   "teams": [
     {
       "name": "team_name_0",
-      "color": "green"
+      "color": "green",
+      "avatar": "avatar1.png"
     },
     {
       "name": "team_name_1",
-      "color": "red"
+      "color": "red",
+      "avatar": "avatar2.png"
     },
     {
       "name": "team_name_2",
-      "color": "blue"
+      "color": "blue",
+      "avatar": "avatar3.png"
     },
     {
       "name": "team_name_3",
-      "color": "yellow"
+      "color": "yellow",
+      "avatar": "avatar4.png"
     }
   ]
 }
