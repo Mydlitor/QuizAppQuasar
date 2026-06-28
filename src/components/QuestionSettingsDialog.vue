@@ -229,14 +229,33 @@
                                                     :src="`media://${questionProps.row.media}`"
                                                 />
                                                 <q-file
-                                                    standout
+                                                    outlined
+                                                    dense
                                                     :model-value="null"
-                                                    @update:model-value="(file) => onMediaUpload(file, questionProps.row)"
+                                                    :ref="(el) => setFileRef(props.rowIndex, questionProps.rowIndex, el)"
+                                                    @update:model-value="
+                                                        (file) =>
+                                                            onMediaUpload(file, questionProps.row)
+                                                    "
+                                                    @click="blurFileInput(props.rowIndex, questionProps.rowIndex)"
                                                     label="Select media"
-                                                    accept="image/*,video/*,audio/*"
+                                                    accept="image/*"
                                                 >
-                                                    <template v-if="questionProps.row.media" v-slot:append>
-                                                        <q-icon name="close" @click.stop.prevent="questionProps.row.media = null" class="cursor-pointer" />
+                                                    <template
+                                                        v-if="questionProps.row.media"
+                                                        v-slot:append
+                                                    >
+                                                        <q-icon
+                                                            name="close"
+                                                            @click.stop.prevent="
+                                                                onRemoveMedia(
+                                                                    props.rowIndex,
+                                                                    questionProps.rowIndex,
+                                                                    questionProps.row
+                                                                )
+                                                            "
+                                                            class="cursor-pointer"
+                                                        />
                                                     </template>
                                                 </q-file>
                                             </q-td>
@@ -369,6 +388,7 @@ const categoryContextMenuRef = ref(null);
 const questionContextMenuRef = ref(null);
 const categoryPopupRefs = ref([]);
 const questionPopupRefs = ref([]);
+const fileRefs = ref({});
 const categoriesError = ref(false);
 const categoriesErrorMessage = ref("");
 const questionsError = ref(false);
@@ -481,6 +501,21 @@ const onAddQuestion = (catIndex) => {
 const onMediaUpload = (file, row) => {
     if (!file) return;
     emit("upload-media", { file, row });
+};
+
+const setFileRef = (catIndex, qIndex, el) => {
+    if (el) {
+        fileRefs.value[`${catIndex}-${qIndex}`] = el;
+    }
+};
+
+const blurFileInput = (catIndex, qIndex) => {
+    fileRefs.value[`${catIndex}-${qIndex}`]?.blur();
+};
+
+const onRemoveMedia = (catIndex, qIndex, row) => {
+    row.media = null;
+    blurFileInput(catIndex, qIndex);
 };
 
 const setCategoryPopupRef = (index, el) => {
