@@ -226,13 +226,19 @@
                                             >
                                                 <q-img
                                                     v-if="questionProps.row.media"
-                                                    :src="questionProps.row.media"
+                                                    :src="`media://${questionProps.row.media}`"
                                                 />
                                                 <q-file
                                                     standout
-                                                    v-model="questionProps.row.media"
+                                                    :model-value="null"
+                                                    @update:model-value="(file) => onMediaUpload(file, questionProps.row)"
                                                     label="Select media"
-                                                />
+                                                    accept="image/*,video/*,audio/*"
+                                                >
+                                                    <template v-if="questionProps.row.media" v-slot:append>
+                                                        <q-icon name="close" @click.stop.prevent="questionProps.row.media = null" class="cursor-pointer" />
+                                                    </template>
+                                                </q-file>
                                             </q-td>
                                         </q-tr>
                                     </template>
@@ -472,6 +478,11 @@ const onAddQuestion = (catIndex) => {
         questionData.value.categories[catIndex].questions.push({ text: "NEW QUESTION" });
 };
 
+const onMediaUpload = (file, row) => {
+    if (!file) return;
+    emit("upload-media", { file, row });
+};
+
 const setCategoryPopupRef = (index, el) => {
     categoryPopupRefs.value[index] = el;
 };
@@ -552,7 +563,7 @@ const props = defineProps({
     questions: Object,
 });
 
-const emit = defineEmits(["save-changes", "reset-progress"]);
+const emit = defineEmits(["save-changes", "reset-progress", "upload-media"]);
 </script>
 
 <style scoped lang="scss">

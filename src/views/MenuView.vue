@@ -11,17 +11,19 @@
         <q-btn label="EXIT" @click="onExit" />
         <team-settings-dialog v-model="isTeamSettingsDialogShown" :teams="teams" @save-changes="onTeamSettingsSave" />
         <question-settings-dialog v-model="isQuestionSettingsDialogShown" :questions="questions"
-            @save-changes="onQuestionSettingsSave" @reset-progress="onResetProgress" />
+            @save-changes="onQuestionSettingsSave" @reset-progress="onResetProgress" @upload-media="onMediaUpload" />
     </q-page>
 </template>
 
 <script setup>
 import { ref, onBeforeMount, computed } from 'vue';
+import { useQuasar } from 'quasar';
 import { useGameStore } from 'src/stores/gameStore';
 import TeamSettingsDialog from 'src/components/TeamSettingsDialog.vue';
 import QuestionSettingsDialog from 'src/components/QuestionSettingsDialog.vue';
 
 const gameStore = useGameStore();
+const $q = useQuasar();
 
 const gameName = computed(() => gameStore.getGameName())
 const teams = computed(() => gameStore.getTeams())
@@ -48,6 +50,25 @@ const onQuestionSettingsSave = async (newQuestionsData) => {
 
 const onResetProgress = () => {
     gameStore.resetGameProgress();
+}
+
+const onMediaUpload = async ({ file, row }) => {
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const data = new Uint8Array(arrayBuffer);
+        const uniqueFileName = `${Date.now()}_${file.name}`;
+        
+        const response = await gameStore.saveMedia(uniqueFileName, data);
+        if (response && response.ok) {
+            row.media = uniqueFileName;
+            $q.notify({ type: "positive", message: "Media uploaded successfully" });
+        } else {
+            $q.notify({ type: "negative", message: "Failed to upload media" });
+        }
+    } catch (err) {
+        console.error("Failed to upload media:", err);
+        $q.notify({ type: "negative", message: "Error uploading media" });
+    }
 }
 
 const onExit = () => {

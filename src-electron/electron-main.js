@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, ipcMain } from "electron";
+import { app, BrowserWindow, Menu, ipcMain, protocol, net } from "electron";
 import path from "node:path";
 import os from "node:os";
 import { fileURLToPath } from "node:url";
@@ -60,6 +60,10 @@ function getQuestionsFilePath() {
     return path.join(app.getPath("userData"), "QuizApp", "questions.json");
 }
 
+function getMediaFilePath(filename) {
+    return path.join(app.getPath("userData"), "QuizApp", "media", filename);
+}
+
 async function saveTeamsToDiskAsync(filepath, data) {
     const dir = path.dirname(filepath);
     await fs.mkdir(dir, { recursive: true });
@@ -96,6 +100,14 @@ async function loadQuestionsFromDisk(filepath) {
     }
 }
 
+async function saveMediaFileAsync(filepath, file) {
+    const dir = path.dirname(filepath);
+    await fs.mkdir(dir, { recursive: true });
+    const tmp = filepath + ".tmp";
+    await fs.writeFile(tmp, file, "utf8");
+    await fs.rename(tmp, filepath);
+}
+
 ipcMain.handle("app:quit", () => {
     app.quit();
 });
@@ -124,7 +136,21 @@ ipcMain.handle("questions:load", async () => {
     return data; // may be null
 });
 
-app.whenReady().then(createWindow);
+ipcMain.handle("media:save", async (event, file) => {
+    const filepath = getMediaFilePath(file.name);
+    await saveMediaFileAsync(filepath, file.data);
+    return { ok: true };
+});
+
+app.whenReady().then(() => {
+    protocol.handle("media", (request) => {
+        const url = request.url.replace("media://", "");
+        const decodedUrl = decodeURIComponent(url);
+        const filepath = getMediaFilePath(decodedUrl);
+        return net.fetch("file://" + filepath);
+    });
+    createWindow();
+});
 
 app.on("window-all-closed", () => {
     if (platform !== "darwin") {

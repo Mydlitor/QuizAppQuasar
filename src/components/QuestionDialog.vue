@@ -11,9 +11,17 @@
             <q-linear-progress class="linear-progress" rounded :value="progressRemaining" />
             <h5>{{ remaining }}</h5>
             <div class="dialog-content">
-                <h4>{{ props.question.text }}</h4>
-                <q-btn @click="toggleTimer" :label="timerLabel" />
+                <div class="question-content">
+                    <q-img
+                        v-if="props.question.media"
+                        :src="`media://${props.question.media}`"
+                        fit="contain"
+                        style="height: 30vh; width: 100%; margin-bottom: 1rem"
+                    />
+                    <h4>{{ props.question.text }}</h4>
+                </div>
                 <div class="buttons-container">
+                    <q-btn @click="toggleTimer" :label="timerLabel" />
                     <div class="answer-buttons-container">
                         <q-btn label="CORRECT" @click="onAnsweredCorrectly" />
                         <q-btn label="INCORRECT" @click="onAnsweredIncorrectly" />
@@ -176,6 +184,7 @@ const emit = defineEmits(["answered-correctly", "answered-incorrectly", "hide-di
 
 .dialog-content {
     height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -184,7 +193,14 @@ const emit = defineEmits(["answered-correctly", "answered-incorrectly", "hide-di
     // padding-left: 5rem;
     // padding-right: 5rem;
     // padding-bottom: 10rem;
-    padding: 10rem 5rem 5rem 5rem;
+    padding: 0rem 5rem 2rem 5rem;
+}
+
+.question-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .buttons-container {

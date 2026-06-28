@@ -103,6 +103,18 @@ const saveGameStatus = async () => {
     }
 };
 
+const saveMedia = async (fileName, data) => {
+    try {
+        if (typeof window !== "undefined" && window.api && window.api.saveMedia) {
+            return await window.api.saveMedia({ name: fileName, data: data });
+        }
+    } catch (err) {
+        console.error("Failed to save media to file: ", err);
+        return { ok: false };
+    }
+    return { ok: false };
+};
+
 const setupData = async () => {
     let savedTeams = null;
     let savedQuestions = null;
@@ -303,6 +315,7 @@ export function useGameStore() {
         updateTeamsData,
         updateQuestionsData,
         saveGameStatus,
+        saveMedia,
         setupData,
         resetGameProgress,
         getGameEndedStatus,
