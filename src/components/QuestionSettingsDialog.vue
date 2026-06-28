@@ -185,6 +185,7 @@
                                             <q-td
                                                 key="text"
                                                 :props="questionProps"
+                                                style="white-space: normal; word-break: break-word"
                                                 @dblclick.stop="
                                                     onQuestionDblClick(
                                                         props.rowIndex,
@@ -210,12 +211,14 @@
                                                 >
                                                     <q-input
                                                         v-model="scope.value"
+                                                        type="textarea"
+                                                        autogrow
                                                         dense
                                                         autofocus
                                                         borderless
                                                         :error="questionsError"
                                                         :error-message="questionsErrorMessage"
-                                                        @keyup.enter="scope.set"
+                                                        @keydown.enter.prevent="scope.set"
                                                     />
                                                 </q-popup-edit>
                                             </q-td>
@@ -232,12 +235,24 @@
                                                     outlined
                                                     dense
                                                     :model-value="null"
-                                                    :ref="(el) => setFileRef(props.rowIndex, questionProps.rowIndex, el)"
+                                                    :ref="
+                                                        (el) =>
+                                                            setFileRef(
+                                                                props.rowIndex,
+                                                                questionProps.rowIndex,
+                                                                el,
+                                                            )
+                                                    "
                                                     @update:model-value="
                                                         (file) =>
                                                             onMediaUpload(file, questionProps.row)
                                                     "
-                                                    @click="blurFileInput(props.rowIndex, questionProps.rowIndex)"
+                                                    @click="
+                                                        blurFileInput(
+                                                            props.rowIndex,
+                                                            questionProps.rowIndex,
+                                                        )
+                                                    "
                                                     label="Select media"
                                                     accept="image/*"
                                                 >
@@ -251,7 +266,7 @@
                                                                 onRemoveMedia(
                                                                     props.rowIndex,
                                                                     questionProps.rowIndex,
-                                                                    questionProps.row
+                                                                    questionProps.row,
                                                                 )
                                                             "
                                                             class="cursor-pointer"

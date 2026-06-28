@@ -16,9 +16,11 @@
                         v-if="props.question.media"
                         :src="`media://${props.question.media}`"
                         fit="contain"
-                        style="height: 30vh; width: 100%; margin-bottom: 1rem"
+                        class="question-image"
                     />
-                    <h4>{{ props.question.text }}</h4>
+                    <h5 class="question-text">
+                        {{ props.question.text }}
+                    </h5>
                 </div>
                 <div class="buttons-container">
                     <q-btn @click="toggleTimer" :label="timerLabel" />
@@ -183,24 +185,42 @@ const emit = defineEmits(["answered-correctly", "answered-incorrectly", "hide-di
 }
 
 .dialog-content {
-    height: 100%;
+    flex: 1;
+    min-height: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    // padding-top: 10rem;
-    // padding-left: 5rem;
-    // padding-right: 5rem;
-    // padding-bottom: 10rem;
-    padding: 0rem 5rem 2rem 5rem;
+    padding: 0rem 10rem 2rem 10rem;
 }
 
 .question-content {
+    flex: 1;
+    min-height: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    margin-bottom: 5rem;
+    overflow: hidden;
+}
+
+.question-image {
+    flex: 1;
+    min-height: 0;
+    max-height: 100%;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.question-text {
+    white-space: normal;
+    word-break: break-word;
+    text-align: center;
+    margin: 0;
+    font-size: clamp(0.5rem, 5vh, 1.75rem);
 }
 
 .buttons-container {
