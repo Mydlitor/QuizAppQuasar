@@ -1,5 +1,5 @@
 <template>
-    <q-page class="game-view-main">
+    <q-page class="game-view-main" :class="{ hasBackground: background !== null }">
         <div class="back-button-container">
             <q-btn class="back-button" label="BACK" @click="onBackButton" />
         </div>
@@ -38,6 +38,8 @@ import TeamsDisplay from "components/TeamsDisplay.vue";
 const gameStore = useGameStore();
 const router = useRouter();
 
+const background = ref(null);
+
 const questions = computed(() => gameStore.getQuestions());
 const teams = computed(() => gameStore.getTeams());
 const answerTime = computed(() => gameStore.getAnswerTime());
@@ -70,6 +72,7 @@ const onBackButton = () => {
 };
 
 onBeforeMount(() => {
+    background.value = gameStore.getBackground();
     gameStore.setupData();
     currentTeam.value = gameStore.getCurrentTeam();
     console.log(currentTeam.value);

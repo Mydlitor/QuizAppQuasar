@@ -11,6 +11,7 @@ const currentTeam = ref(null);
 const gameName = ref(null);
 const answerTime = ref(0);
 const isGameEnded = ref(false);
+const background = ref(null);
 const remainingQuestions = computed(() => {
     return [...questionsMap.value.values()].filter((q) => q.isAnswered == null).length;
 });
@@ -22,6 +23,8 @@ const getGameEndedStatus = () => isGameEnded.value;
 
 const getGameName = () => gameName.value;
 const getAnswerTime = () => answerTime.value;
+
+const getBackground = () => background.value;
 
 watch(remainingQuestions, (newRemainingQuestions) => {
     if (newRemainingQuestions <= 0) {
@@ -45,8 +48,6 @@ const setQuestionCorrect = (question, team) => {
     }
     q.isAnswered = true;
     q.teamAnswered = team;
-
-    console.log(remainingQuestions.value);
 };
 
 const setQuestionIncorrect = (question) => {
@@ -82,6 +83,9 @@ const updateQuestionsData = async (newQuestionsData) => {
     answerTime.value = questions.value.settings.answerTime
         ? questions.value.settings.answerTime
         : answerTime.value;
+    background.value = questions.value.settings.background
+        ? questions.value.settings.background
+        : null;
     validateQuestionValues();
     try {
         if (typeof window !== "undefined" && window.api && window.api.saveQuestions) {
@@ -164,9 +168,9 @@ const setupData = async () => {
     answerTime.value = questions.value.settings.answerTime
         ? questions.value.settings.answerTime
         : 30;
-
-    console.log("gs", remainingQuestions.value);
-    console.log("gs", isGameEnded.value);
+    background.value = questions.value.settings.background
+        ? questions.value.settings.background
+        : null;
 };
 
 const validateQuestionValues = () => {
@@ -309,6 +313,7 @@ export function useGameStore() {
         getCurrentTeam,
         getGameName,
         getAnswerTime,
+        getBackground,
         selectNextTeam,
         setQuestionCorrect,
         setQuestionIncorrect,
