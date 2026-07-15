@@ -8,42 +8,20 @@
             <p>NO QUESTIONS</p>
         </div>
         <div class="questions-container">
-            <div
-                class="category-column"
-                v-for="category in questions.categories"
-                v-bind:key="category.name"
-            >
-                <p
-                    class="category-name"
-                    style="font-size: large; word-break: break-word; height: 3rem"
-                >
+            <div class="category-column" v-for="category in questions.categories" v-bind:key="category.name">
+                <p class="category-name" style="font-size: large; word-break: break-word; height: 3rem">
                     {{ category.name }}
                 </p>
-                <QuestionElement
-                    v-for="question in category.questions"
-                    v-bind:key="question.number"
-                    :question="question"
-                    @click="showQuestionDialog(question)"
-                />
+                <QuestionElement v-for="question in category.questions" v-bind:key="question.number"
+                    :question="question" @click="showQuestionDialog(question)" />
             </div>
         </div>
         <TeamsDisplay class="teams-display" :teams="teams" :current-team="currentTeam" />
-        <q-btn
-            v-show="isGameResultEnded"
-            label="SHOW RESULTS"
-            @click="isGameResultDialogShown = true"
-        />
+        <q-btn v-show="isGameResultEnded" label="SHOW RESULTS" @click="isGameResultDialogShown = true" />
 
-        <QuestionDialog
-            v-model="isQuestionDialogShown"
-            :question="currentQuestion"
-            :teams="teams"
-            :current-team="currentTeam"
-            :answer-time="answerTime"
-            @answered-correctly="onAnsweredCorrectly"
-            @answered-incorrectly="onAnsweredIncorrectly"
-            @hide-dialog="onDialogHide"
-        />
+        <QuestionDialog v-model="isQuestionDialogShown" :question="currentQuestion" :teams="teams"
+            :current-team="currentTeam" :answer-time="answerTime" @answered-correctly="onAnsweredCorrectly"
+            @answered-incorrectly="onAnsweredIncorrectly" @hide-dialog="onDialogHide" />
         <GameResultDialog v-model="isGameResultDialogShown" :teams="teams" />
     </q-page>
 </template>

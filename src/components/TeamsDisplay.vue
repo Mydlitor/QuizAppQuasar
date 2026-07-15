@@ -1,12 +1,7 @@
 <template>
     <div class="teams-display-main">
-        <q-avatar
-            class="team-card"
-            rounded
-            v-for="team in props.teams"
-            :key="team.name"
-            :style="{ outline: team.name === currentTeam?.name ? '3px solid white' : 'none' }"
-        >
+        <q-avatar class="team-card" rounded v-for="team in props.teams" :key="team.name"
+            :style="{ outline: team.name === currentTeam?.name ? '3px solid white' : 'none' }">
             <q-img :src="'/avatars/' + team.avatar" style="height: 100%" />
         </q-avatar>
     </div>

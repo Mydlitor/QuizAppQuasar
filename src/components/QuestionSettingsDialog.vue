@@ -1,112 +1,52 @@
 <template>
-    <q-dialog
-        full-width
-        @before-hide="onDialogBeforeHide"
-        @before-show="onDialogBeforeShow"
-        no-backdrop-dismiss
-        no-shake
-        ref="qDialogRef"
-        class="q-dialog"
-    >
+    <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow" no-backdrop-dismiss
+        no-shake ref="qDialogRef" class="q-dialog">
         <div class="dialog-main">
             <div class="game-global-settings">
                 <div class="title-settings">
                     <span style="font-size: larger; margin-right: 0.5rem">Title: </span>
                     <span style="font-size: larger">{{ questionData.settings.gameName }}</span>
                     <q-popup-edit v-model="questionData.settings.gameName" auto-save v-slot="scope">
-                        <q-input
-                            v-model="scope.value"
-                            dense
-                            autofocus
-                            borderless
-                            @keyup.enter="scope.set"
-                        />
+                        <q-input v-model="scope.value" dense autofocus borderless @keyup.enter="scope.set" />
                     </q-popup-edit>
                 </div>
                 <div class="answer-time-settings">
                     <span style="font-size: larger; margin-right: 0.5rem">Answer time [s]: </span>
                     <span style="font-size: larger">{{ questionData.settings.answerTime }}</span>
-                    <q-popup-edit
-                        v-model="questionData.settings.answerTime"
-                        auto-save
-                        v-slot="scope"
-                    >
-                        <q-input
-                            v-model.number="scope.value"
-                            type="number"
-                            dense
-                            autofocus
-                            borderless
-                            @keyup.enter="scope.set"
-                        />
+                    <q-popup-edit v-model="questionData.settings.answerTime" auto-save v-slot="scope">
+                        <q-input v-model.number="scope.value" type="number" dense autofocus borderless
+                            @keyup.enter="scope.set" />
                     </q-popup-edit>
                 </div>
             </div>
             <div class="question-data-table">
-                <q-table
-                    class="categories-table"
-                    :columns="columns"
-                    :rows="questionData.categories"
-                    row-key="name"
-                    hide-pagination
-                    flat
-                    bordered
-                    separator="cell"
-                    :rows-per-page-options="[0]"
-                    virtual-scroll
-                >
+                <q-table class="categories-table" :columns="columns" :rows="questionData.categories" row-key="name"
+                    hide-pagination flat bordered separator="cell" :rows-per-page-options="[0]" virtual-scroll>
                     <template v-slot:body="props">
-                        <q-tr
-                            :props="props"
-                            @click="onRowClick(props)"
-                            @contextmenu.prevent="onCategoryRowContextMenu($event, props.rowIndex)"
-                        >
+                        <q-tr :props="props" @click="onRowClick(props)"
+                            @contextmenu.prevent="onCategoryRowContextMenu($event, props.rowIndex)">
                             <q-td key="index" :props="props" style="width: 20%">
                                 <div class="index-container">
                                     {{ props.rowIndex + 1 }}
                                     <div class="move-buttons-container">
-                                        <q-btn
-                                            :disable="props.rowIndex <= 0"
-                                            size="xs"
-                                            @click.stop="onMoveCategoryUp(props.rowIndex)"
-                                        >
+                                        <q-btn :disable="props.rowIndex <= 0" size="xs"
+                                            @click.stop="onMoveCategoryUp(props.rowIndex)">
                                             <q-icon :name="matKeyboardArrowUp" size="xs" />
                                         </q-btn>
-                                        <q-btn
-                                            :disable="
-                                                props.rowIndex >= questionData.categories.length - 1
-                                            "
-                                            size="xs"
-                                            @click.stop="onMoveCategoryDown(props.rowIndex)"
-                                        >
+                                        <q-btn :disable="props.rowIndex >= questionData.categories.length - 1
+                                            " size="xs" @click.stop="onMoveCategoryDown(props.rowIndex)">
                                             <q-icon :name="matKeyboardArrowDown" size="xs" />
                                         </q-btn>
                                     </div>
                                 </div>
                             </q-td>
-                            <q-td
-                                key="name"
-                                :props="props"
-                                @dblclick.stop="onCategoryDblClick(props.rowIndex)"
-                            >
+                            <q-td key="name" :props="props" @dblclick.stop="onCategoryDblClick(props.rowIndex)">
                                 {{ props.row.name }}
-                                <q-popup-edit
-                                    v-model="props.row.name"
-                                    auto-save
-                                    v-slot="scope"
-                                    no-parent-event
+                                <q-popup-edit v-model="props.row.name" auto-save v-slot="scope" no-parent-event
                                     :validate="validateCategoryName"
-                                    :ref="(el) => setCategoryPopupRef(props.rowIndex, el)"
-                                >
-                                    <q-input
-                                        v-model="scope.value"
-                                        dense
-                                        autofocus
-                                        borderless
-                                        :error="categoriesError"
-                                        :error-message="categoriesErrorMessage"
-                                        @keyup.enter="scope.set"
-                                    />
+                                    :ref="(el) => setCategoryPopupRef(props.rowIndex, el)">
+                                    <q-input v-model="scope.value" dense autofocus borderless :error="categoriesError"
+                                        :error-message="categoriesErrorMessage" @keyup.enter="scope.set" />
                                 </q-popup-edit>
                             </q-td>
                             <q-td key="questionsCount" :props="props" style="width: 20%">
@@ -115,162 +55,92 @@
                         </q-tr>
                         <q-tr v-show="props.expand" :props="props">
                             <q-td colspan="100%">
-                                <q-table
-                                    :columns="questionColumns"
-                                    :rows="props.row.questions"
-                                    row-key="id"
-                                    hide-pagination
-                                    flat
-                                    bordered
-                                    separator="cell"
-                                    :rows-per-page-options="[0]"
-                                >
+                                <q-table :columns="questionColumns" :rows="props.row.questions" row-key="id"
+                                    hide-pagination flat bordered separator="cell" :rows-per-page-options="[0]">
                                     <template v-slot:body="questionProps">
-                                        <q-tr
-                                            :props="questionProps"
-                                            @contextmenu.prevent.stop="
-                                                onQuestionRowContextMenu(
-                                                    $event,
-                                                    props.rowIndex,
-                                                    questionProps.rowIndex,
-                                                )
-                                            "
-                                        >
-                                            <q-td
-                                                key="index"
-                                                :props="questionProps"
-                                                style="width: 20%"
-                                            >
+                                        <q-tr :props="questionProps" @contextmenu.prevent.stop="
+                                            onQuestionRowContextMenu(
+                                                $event,
+                                                props.rowIndex,
+                                                questionProps.rowIndex,
+                                            )
+                                            ">
+                                            <q-td key="index" :props="questionProps" style="width: 20%">
                                                 <div class="index-container">
                                                     {{ questionProps.rowIndex + 1 }}
                                                     <div class="move-buttons-container">
-                                                        <q-btn
-                                                            :disable="questionProps.rowIndex <= 0"
-                                                            size="xs"
+                                                        <q-btn :disable="questionProps.rowIndex <= 0" size="xs"
                                                             @click.stop="
                                                                 onMoveQuestionUp(
                                                                     props.rowIndex,
                                                                     questionProps.rowIndex,
                                                                 )
-                                                            "
-                                                        >
-                                                            <q-icon
-                                                                :name="matKeyboardArrowUp"
-                                                                size="xs"
-                                                            />
+                                                                ">
+                                                            <q-icon :name="matKeyboardArrowUp" size="xs" />
                                                         </q-btn>
-                                                        <q-btn
-                                                            :disable="
-                                                                questionProps.rowIndex >=
-                                                                questionData.categories[
-                                                                    questionProps.rowIndex
-                                                                ].questions.length
-                                                            "
-                                                            size="xs"
-                                                            @click.stop="
+                                                        <q-btn :disable="questionProps.rowIndex >=
+                                                            questionData.categories[
+                                                                questionProps.rowIndex
+                                                            ].questions.length
+                                                            " size="xs" @click.stop="
                                                                 onMoveQuestionDown(
                                                                     props.rowIndex,
                                                                     questionProps.rowIndex,
                                                                 )
-                                                            "
-                                                        >
-                                                            <q-icon
-                                                                :name="matKeyboardArrowDown"
-                                                                size="xs"
-                                                            />
+                                                                ">
+                                                            <q-icon :name="matKeyboardArrowDown" size="xs" />
                                                         </q-btn>
                                                     </div>
                                                 </div>
                                             </q-td>
-                                            <q-td
-                                                key="text"
-                                                :props="questionProps"
-                                                style="white-space: normal; word-break: break-word"
-                                                @dblclick.stop="
+                                            <q-td key="text" :props="questionProps"
+                                                style="white-space: normal; word-break: break-word" @dblclick.stop="
                                                     onQuestionDblClick(
                                                         props.rowIndex,
                                                         questionProps.rowIndex,
                                                     )
-                                                "
-                                            >
+                                                    ">
                                                 {{ questionProps.row.text }}
-                                                <q-popup-edit
-                                                    v-model="questionProps.row.text"
-                                                    auto-save
-                                                    v-slot="scope"
-                                                    no-parent-event
-                                                    :validate="validateQuestionText"
-                                                    :ref="
-                                                        (el) =>
-                                                            setQuestionPopupRef(
-                                                                props.rowIndex,
-                                                                questionProps.rowIndex,
-                                                                el,
-                                                            )
-                                                    "
-                                                >
-                                                    <q-input
-                                                        v-model="scope.value"
-                                                        type="textarea"
-                                                        autogrow
-                                                        dense
-                                                        autofocus
-                                                        borderless
-                                                        :error="questionsError"
+                                                <q-popup-edit v-model="questionProps.row.text" auto-save v-slot="scope"
+                                                    no-parent-event :validate="validateQuestionText" :ref="(el) =>
+                                                        setQuestionPopupRef(
+                                                            props.rowIndex,
+                                                            questionProps.rowIndex,
+                                                            el,
+                                                        )
+                                                        ">
+                                                    <q-input v-model="scope.value" type="textarea" autogrow dense
+                                                        autofocus borderless :error="questionsError"
                                                         :error-message="questionsErrorMessage"
-                                                        @keydown.enter.prevent="scope.set"
-                                                    />
+                                                        @keydown.enter.prevent="scope.set" />
                                                 </q-popup-edit>
                                             </q-td>
-                                            <q-td
-                                                key="media"
-                                                :props="questionProps"
-                                                style="width: 20%"
-                                            >
-                                                <q-img
-                                                    v-if="questionProps.row.media"
-                                                    :src="`media://${questionProps.row.media}`"
-                                                />
-                                                <q-file
-                                                    outlined
-                                                    dense
-                                                    :model-value="null"
-                                                    :ref="
-                                                        (el) =>
-                                                            setFileRef(
-                                                                props.rowIndex,
-                                                                questionProps.rowIndex,
-                                                                el,
-                                                            )
-                                                    "
-                                                    @update:model-value="
+                                            <q-td key="media" :props="questionProps" style="width: 20%">
+                                                <q-img v-if="questionProps.row.media"
+                                                    :src="`media://${questionProps.row.media}`" />
+                                                <q-file outlined dense :model-value="null" :ref="(el) =>
+                                                    setFileRef(
+                                                        props.rowIndex,
+                                                        questionProps.rowIndex,
+                                                        el,
+                                                    )
+                                                    " @update:model-value="
                                                         (file) =>
                                                             onMediaUpload(file, questionProps.row)
-                                                    "
-                                                    @click="
+                                                    " @click="
                                                         blurFileInput(
                                                             props.rowIndex,
                                                             questionProps.rowIndex,
                                                         )
-                                                    "
-                                                    label="Select media"
-                                                    accept="image/*"
-                                                >
-                                                    <template
-                                                        v-if="questionProps.row.media"
-                                                        v-slot:append
-                                                    >
-                                                        <q-icon
-                                                            name="close"
-                                                            @click.stop.prevent="
-                                                                onRemoveMedia(
-                                                                    props.rowIndex,
-                                                                    questionProps.rowIndex,
-                                                                    questionProps.row,
-                                                                )
-                                                            "
-                                                            class="cursor-pointer"
-                                                        />
+                                                        " label="Select media" accept="image/*">
+                                                    <template v-if="questionProps.row.media" v-slot:append>
+                                                        <q-icon name="close" @click.stop.prevent="
+                                                            onRemoveMedia(
+                                                                props.rowIndex,
+                                                                questionProps.rowIndex,
+                                                                questionProps.row,
+                                                            )
+                                                            " class="cursor-pointer" />
                                                     </template>
                                                 </q-file>
                                             </q-td>
@@ -278,15 +148,9 @@
                                     </template>
                                     <template v-slot:bottom-row>
                                         <q-tr>
-                                            <q-td
-                                                colspan="100%"
-                                                style="text-align: center; cursor: pointer"
-                                                @click="onAddQuestion(props.rowIndex)"
-                                            >
-                                                <q-icon
-                                                    :name="matAddCircle"
-                                                    style="margin-right: 0.5rem"
-                                                />
+                                            <q-td colspan="100%" style="text-align: center; cursor: pointer"
+                                                @click="onAddQuestion(props.rowIndex)">
+                                                <q-icon :name="matAddCircle" style="margin-right: 0.5rem" />
                                                 <span>ADD QUESTION</span>
                                             </q-td>
                                         </q-tr>
@@ -297,11 +161,7 @@
                     </template>
                     <template v-slot:bottom-row>
                         <q-tr>
-                            <q-td
-                                colspan="100%"
-                                style="text-align: center; cursor: pointer"
-                                @click="onAddCategory"
-                            >
+                            <q-td colspan="100%" style="text-align: center; cursor: pointer" @click="onAddCategory">
                                 <q-icon :name="matAddCircle" style="margin-right: 0.5rem" />
                                 <span>ADD CATEGORY</span>
                             </q-td>
@@ -315,26 +175,14 @@
                 <q-btn label="RESET GAME PROGRESS" @click="onGameProgressReset" />
             </div>
         </div>
-        <q-menu
-            ref="categoryContextMenuRef"
-            anchor="top left"
-            self="top left"
-            context-menu
-            auto-close
-        >
+        <q-menu ref="categoryContextMenuRef" anchor="top left" self="top left" context-menu auto-close>
             <q-list>
                 <q-item clickable v-close-popup @click="onRemoveCategory">
                     <q-item-section>REMOVE CATEGORY</q-item-section>
                 </q-item>
             </q-list>
         </q-menu>
-        <q-menu
-            ref="questionContextMenuRef"
-            anchor="top left"
-            self="top left"
-            context-menu
-            auto-close
-        >
+        <q-menu ref="questionContextMenuRef" anchor="top left" self="top left" context-menu auto-close>
             <q-list>
                 <q-item clickable v-close-popup @click="onRemoveQuestion">
                     <q-item-section>REMOVE QUESTION</q-item-section>
@@ -444,9 +292,9 @@ const onMoveQuestionUp = (catIndex, index) => {
         questionData.value.categories[catIndex].questions[index - 1],
         questionData.value.categories[catIndex].questions[index],
     ] = [
-        questionData.value.categories[catIndex].questions[index],
-        questionData.value.categories[catIndex].questions[index - 1],
-    ];
+            questionData.value.categories[catIndex].questions[index],
+            questionData.value.categories[catIndex].questions[index - 1],
+        ];
 };
 
 const onMoveQuestionDown = (catIndex, index) => {
@@ -455,9 +303,9 @@ const onMoveQuestionDown = (catIndex, index) => {
         questionData.value.categories[catIndex].questions[index + 1],
         questionData.value.categories[catIndex].questions[index],
     ] = [
-        questionData.value.categories[catIndex].questions[index],
-        questionData.value.categories[catIndex].questions[index + 1],
-    ];
+            questionData.value.categories[catIndex].questions[index],
+            questionData.value.categories[catIndex].questions[index + 1],
+        ];
 };
 
 const onCategoryRowContextMenu = (event, categoryIndex) => {
@@ -607,7 +455,7 @@ const onDialogBeforeShow = () => {
     questionData.value = JSON.parse(JSON.stringify(props.questions));
 };
 
-const onDialogBeforeHide = () => {};
+const onDialogBeforeHide = () => { };
 
 const props = defineProps({
     questions: Object,

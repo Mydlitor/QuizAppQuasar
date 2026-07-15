@@ -57,7 +57,7 @@ const onMediaUpload = async ({ file, row }) => {
         const arrayBuffer = await file.arrayBuffer();
         const data = new Uint8Array(arrayBuffer);
         const uniqueFileName = `${Date.now()}_${file.name}`;
-        
+
         const response = await gameStore.saveMedia(uniqueFileName, data);
         if (response && response.ok) {
             row.media = uniqueFileName;

@@ -1,23 +1,13 @@
 <template>
-    <q-dialog
-        full-width
-        @before-hide="onDialogBeforeHide"
-        @before-show="onDialogBeforeShow"
-        no-backdrop-dismiss
-        no-shake
-        ref="qDialogRef"
-    >
+    <q-dialog full-width @before-hide="onDialogBeforeHide" @before-show="onDialogBeforeShow" no-backdrop-dismiss
+        no-shake ref="qDialogRef">
         <div class="dialog-main" ref="dialogDivRef">
             <q-linear-progress class="linear-progress" rounded :value="progressRemaining" />
             <h5>{{ remaining }}</h5>
             <div class="dialog-content">
                 <div class="question-content">
-                    <q-img
-                        v-if="props.question.media"
-                        :src="`media://${props.question.media}`"
-                        fit="contain"
-                        class="question-image"
-                    />
+                    <q-img v-if="props.question.media" :src="`media://${props.question.media}`" fit="contain"
+                        class="question-image" />
                     <h5 class="question-text">
                         {{ props.question.text }}
                     </h5>
@@ -31,13 +21,8 @@
                     <q-btn label="STEAL" @click="onSteal">
                         <q-menu>
                             <q-list>
-                                <q-item
-                                    clickable
-                                    v-close-popup
-                                    v-for="team in teamsOptions"
-                                    v-bind:key="team.name"
-                                    @click="onTeamSelect(team)"
-                                >
+                                <q-item clickable v-close-popup v-for="team in teamsOptions" v-bind:key="team.name"
+                                    @click="onTeamSelect(team)">
                                     <q-item-section>
                                         {{ team.name }}
                                     </q-item-section>
